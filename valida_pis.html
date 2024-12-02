@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de PIS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+            display: block;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .output {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Validador de PIS</h1>
+        <input type="file" id="fileInput" accept=".csv">
+        <button onclick="processFile()">Validar PIS</button>
+        <div class="output" id="output"></div>
+    </div>
+
+    <script>
+        function validaPIS(pis) {
+            // Remove caracteres não numéricos
+            pis = pis.replace(/\D/g, '');
+
+            // Verifica se possui 12 dígitos e descarta o primeiro '0' se necessário
+            if (pis.length === 12 && pis.startsWith('0')) {
+                pis = pis.slice(1);
+            }
+
+            // Verifica se o PIS resultante possui exatamente 11 dígitos
+            if (pis.length !== 11) return false;
+
+            // Cálculo do dígito verificador
+            const pesos = [3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+            const soma = pis
+                .slice(0, 10)
+                .split('')
+                .reduce((acc, digito, i) => acc + parseInt(digito, 10) * pesos[i], 0);
+
+            const resto = soma % 11;
+            const dv = resto < 2 ? 0 : 11 - resto;
+
+            return dv === parseInt(pis[10], 10);
+        }
+
+        function processFile() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('Por favor, selecione um arquivo CSV.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const csvContent = e.target.result;
+                const rows = csvContent.split('\n').map(row => row.split(';'));
+                let header = rows.shift();
+
+                // Identifica a coluna PIS independentemente do caso
+                const pisIndex = header.findIndex(
+                    col => col.trim().toLowerCase() === 'pis'
+                );
+
+                if (pisIndex === -1) {
+                    alert('A planilha deve conter uma coluna "PIS" ou "pis".');
+                    return;
+                }
+
+                // Adiciona a coluna "Validação" no cabeçalho
+                header = header.concat('Validação');
+                const resultRows = [header];
+
+                // Processa as linhas
+                rows.forEach(row => {
+                    if (row[pisIndex]) {
+                        const isValid = validaPIS(row[pisIndex]);
+                        resultRows.push(row.concat(isValid ? 'Válido' : 'Inválido'));
+                    }
+                });
+
+                downloadCSV(resultRows);
+            };
+
+            reader.readAsText(file);
+        }
+
+        function downloadCSV(rows) {
+            const csvContent = rows.map(row => row.join(';')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'resultado_pis.csv');
+            link.style.display = 'none';
+            document.body.appendChild(link);
+
+            link.click();
+            document.body.removeChild(link);
+
+            alert('O arquivo processado foi gerado e baixado com sucesso!');
+        }
+    </script>
+</body>
+</html>
