@@ -15,6 +15,7 @@
             background-size: cover;
             color: #e0e0e0;
         }
+
         /* Estilos das abas */
         .tab {
             display: none;
@@ -28,20 +29,20 @@
 
         .tab-button {
             padding: 10px;
-            background-color: #00bcd4; /* Azul ciano */
-            color: black; /* Texto preto */
-            font-weight: bold; /* Texto em negrito */
+            background-color: #00bcd4;
+            color: black;
+            font-weight: bold;
             margin-right: 5px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
 
         .tab-button:hover {
-            background-color: #00acc1; /* Azul ciano mais escuro */
+            background-color: #00acc1;
         }
 
         .active-tab {
-            background-color: #0097a7; /* Azul ciano escuro para o botão ativo */
+            background-color: #0097a7;
         }
 
         iframe {
@@ -49,29 +50,41 @@
             height: 1500px;
             border: none;
         }
+
+        /* Ocultar conteúdo do iframe da aba 9 como alternativa */
+        .blocked-content::after {
+            content: "Conteúdo não disponível.";
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+            font-weight: bold;
+            position: absolute;
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
-
     <!-- Botões das abas -->
     <div class="tab-buttons">
         <div class="tab-button" onclick="openTab('tab1')">Valida AFD</div>
-        <div class="tab-button" onclick="openTab('tab2')">Utilitarios</div>
+        <div class="tab-button" onclick="openTab('tab2')">Utilitários</div>
         <div class="tab-button" onclick="openTab('tab3')">Ahpoio</div>
         <div class="tab-button" onclick="openTab('tab4')">KB</div>
         <div class="tab-button" onclick="openTab('tab5')">Jornada</div>
-        <div class="tab-button" onclick="openTab('tab6')">IA CLT(Sai da pagina)</div>
+        <div class="tab-button" onclick="openTab('tab6')">IA CLT</div>
         <div class="tab-button" onclick="openTab('tab7')">CSV vs JSON</div>
         <div class="tab-button" onclick="openTab('tab8')">Valida planilha PIS</div>
         <div class="tab-button" onclick="openTab('tab9')">Calc</div>
-	
     </div>
 
     <!-- Conteúdo das abas -->
     <div id="tab1" class="tab">
         <iframe src="https://delean-mafra.github.io/leitor_afd.github.io/"></iframe>
     </div>
-
     <div id="tab2" class="tab">
         <iframe src="https://ahgutils.vercel.app/bankCycle"></iframe>
     </div>
@@ -84,6 +97,11 @@
     <div id="tab5" class="tab">
         <iframe src="Calculadora_Relogio_de_Ponto.html"></iframe>
     </div>
+    <div id="tab6" class="tab">
+        <!-- Instruções para abrir uma página externa -->
+        <p><strong>Instruções para acessar o conteúdo de IA CLT:</strong></p>
+        <p>Ao clicar no botão "IA CLT", você será redirecionado para uma página externa.</p>
+    </div>
     <div id="tab7" class="tab">
         <iframe src="https://delean-mafra.github.io/json_func_csv/"></iframe>
     </div>
@@ -91,17 +109,7 @@
         <iframe src="valida_pis.html"></iframe>
     </div>
     <div id="tab9" class="tab">
-        <iframe src="calc.html"></iframe>
-    </div>
-    <div id="tab6" class="tab">
-        <p><strong>Instruções para acessar o conteúdo de IA CLT:</strong></p>
-        <p>Ao clicar no botão "IA CLT", você será redirecionado para uma página externa com um aplicativo de Inteligência Artificial (IA). Siga estas etapas:</p>
-        <ul>
-            <li>Clique em "Explore o aplicativo".</li>
-            <li>Uma mensagem aparecerá dizendo: "Não há suporte para este formulário. Para sua segurança, não envie informações nesse tipo de formulário enquanto usa o Google Tradutor."</li>
-            <li>Clique em "Acesse o URL original".</li>
-            <li>Isso fará com que você seja redirecionado para a página sem a necessidade de fazer login.</li>
-        </ul>
+        <iframe id="iframe-tab9" src="https://sonodaponto.com.br/app/calculadoradehoras/" class="blocked-content"></iframe>
     </div>
 
     <script>
@@ -110,7 +118,7 @@
             const tabs = document.querySelectorAll('.tab');
             const buttons = document.querySelectorAll('.tab-button');
 
-            // Se a aba for "tab6" (IA), abre uma nova aba para o link
+            // Tratamento especial para a aba "IA CLT" (tab6)
             if (tabId === 'tab6') {
                 window.open("https://hf.co/chat/assistant/6675c8db66137c408a16fcaa", "_blank");
                 return;
@@ -119,67 +127,48 @@
             // Esconde todas as abas
             tabs.forEach(tab => tab.style.display = 'none');
 
-            // Remove a classe "active" de todos os botões
+            // Remove a classe "active-tab" de todos os botões
             buttons.forEach(button => button.classList.remove('active-tab'));
 
             // Exibe a aba clicada
-            document.getElementById(tabId).style.display = 'block';
+            const activeTab = document.getElementById(tabId);
+            if (activeTab) activeTab.style.display = 'block';
 
-            // Adiciona a classe "active" no botão da aba selecionada
-            const activeButton = Array.from(buttons).find(button => button.textContent === tabId.replace('tab', 'Aba'));
+            // Adiciona a classe "active-tab" no botão correspondente
+            const activeButton = Array.from(buttons).find(button => button.textContent.includes(tabId.replace('tab', '')));
             if (activeButton) activeButton.classList.add('active-tab');
+
+            // Executa a lógica de remoção específica para a aba 9
+            if (tabId === "tab9") {
+                blockContentInTab9();
+            }
         }
 
-        // Abre a primeira aba por padrão
+        // Função para bloquear conteúdo específico no iframe da tab9
+        function blockContentInTab9() {
+            const iframe = document.querySelector("#iframe-tab9");
+
+            // Aguarda o carregamento do iframe
+            iframe.addEventListener("load", () => {
+                try {
+                    const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+                    // Remove a imagem ou link específico
+                    const unwantedImage = iframeDocument.querySelector('img[src="img/gruposonoda.png"]');
+                    const unwantedLink = iframeDocument.querySelector('a[href="http://www.sonodaponto.com.br"]');
+
+                    if (unwantedImage) unwantedImage.remove();
+                    if (unwantedLink) unwantedLink.remove();
+                } catch (error) {
+                    console.warn("Não foi possível acessar o conteúdo do iframe. Problema de Same-Origin Policy.");
+                }
+            });
+        }
+
+        // Abre a primeira aba por padrão ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
             openTab('tab1');
         });
     </script>
-
-    <script type="text/python">
-        from browser import document, window
-
-        def disable_right_click(event):
-            event.preventDefault()
-
-        document.bind('contextmenu', disable_right_click)
-
-        def disable_keys(event):
-
-            if event.keyCode == 123:
-                event.preventDefault()
-
-            if event.ctrlKey and event.shiftKey and event.keyCode == 73:
-                event.preventDefault()
-
-            if event.ctrlKey and event.shiftKey and event.keyCode == 67:
-                event.preventDefault()
-
-            if event.ctrlKey and event.shiftKey and event.keyCode == 74:
-                event.preventDefault()
-
-            if event.ctrlKey and event.keyCode == 85:
-                event.preventDefault()
-
-            if (event.ctrlKey or event.metaKey) and event.keyCode == 83:
-                event.preventDefault()
-
-            if (event.ctrlKey or event.metaKey) and event.keyCode == 75:
-                event.preventDefault()
-
-            if (event.ctrlKey or event.metaKey) and event.keyCode == 69:
-                event.preventDefault()
-
-            if (event.ctrlKey or event.metaKey) and event.keyCode == 76:
-                event.preventDefault()
-
-        window.bind('keydown', disable_keys)
-
-        def disable_drag(event):
-            event.preventDefault()
-
-        document.bind('dragstart', disable_drag)
-    </script>
-
 </body>
 </html>
