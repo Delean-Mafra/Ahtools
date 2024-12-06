@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <img src="https://www.ahgora.com/_next/static/media/empty-icon.66accb21.svg" alt="Logo Ahgora">
+</body>
+</html>
+<html>
+<script>  
+function limparPontuacao() {
+  let input = document.getElementById("validarCpfPisInput");
+  input.value = input.value.replace(/\.|-/g, "");
+} 
+</script>
+<head>
+</head>
+<body>
+<h1 class="container"><strong>Gerador e validador de CPF e PIS</strong></h1>
+<div class="container"><br />
+<label for="pis">Digite o n&uacute;mero do PIS:</label>&nbsp;<input id="pis" type="text" /><button onclick="validarPIS()">Validar PIS</button><br />
+<label for="gerarCpfQuantidade">Quantidade de CPF/PIS:</label><span style="background-color: rgb(11, 30, 43);">&nbsp;</span><input id="gerarCpfQuantidade" max="10" min="1" name="gerarCpfQuantidade" type="number" value="1" /><br />
+<br />
+<button onclick="gerarCpf()" type="button">Gerar CPF/PIS</button><button onclick="validarCpfPis()" type="button">Validar CPF</button><span style="background-color: rgb(11, 30, 43);">&nbsp;</span><input id="validarCpfPisInput" name="validarCpfPisInput" type="text" spellcheck="false" data-ms-editor="true" onblur="limparPontuacao()">
+
+
+
+
+<div class="resultado" id="resultado">&nbsp;</div>
+</div>
+<script>
+		function gerarCpf() {
+			const quantidade = document.getElementById("gerarCpfQuantidade").value;
+			let resultado = "";
+			
+			for (let i = 0; i < quantidade; i++) {
+				// Gerar CPF
+				const cpf = gerarCPF();
+				resultado += `CPF: ${cpf}<br>`;			
+				// Gerar PIS
+				const pis = gerarPIS();
+				resultado += `PIS: ${pis}<br><br>`;
+			}
+			document.getElementById("resultado").innerHTML = resultado;
+		}
+		function gerarCPF() {
+    const cpfSemDigitos = gerarCPFBase();
+    const primeiroDigito = calcularDigitoCPF(cpfSemDigitos);
+    const segundoDigito = calcularDigitoCPF(cpfSemDigitos + primeiroDigito);
+    return `${cpfSemDigitos}${primeiroDigito}${segundoDigito}`;
+}
+function gerarCPFBase() {
+    let cpfSemDigitos = "";
+    for (let i = 0; i < 9; i++) {
+        cpfSemDigitos += Math.floor(Math.random() * 10);
+    }
+    return cpfSemDigitos;
+}
+function calcularDigitoCPF(cpf) {
+    let soma = 0;
+    for (let i = 0; i < cpf.length; i++) {
+        soma += parseInt(cpf.charAt(i)) * (cpf.length + 1 - i);
+    }
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
+}
+function validateCpf(cpf) {
+  // Remove all punctuation marks from the CPF code.
+  cpf = cpf.replace(/\D/g, "");
+    if (cpf === '') return false;
+    // Elimina CPFs invalidos conhecidos
+    if (cpf.length !== 11 || cpf === "00000000000" || cpf === "11111111111" || cpf === "22222222222" || cpf === "33333333333" || cpf === "44444444444" || cpf === "55555555555" || cpf === "66666666666" || cpf === "77777777777" || cpf === "88888888888" || cpf === "99999999999") {
+        return false;
+    }
+    // Valida 1o digito
+    let soma = 0;
+    for (let i = 0; i < 9; i++) {
+        soma += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    let resto = 11 - (soma % 11);
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+    // Valida 2o digito
+    soma = 0;
+    for (let i = 0; i < 10; i++) {
+        soma += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    resto = 11 - (soma % 11);
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(10))) return false;
+    return true;
+}
+function gerarPIS() {
+    const pisSemDigitos = gerarPISBase();
+    const digito = calcularDigitoPIS(pisSemDigitos);
+    return `${pisSemDigitos}-${digito}`;
+}
+function gerarPISBase() {
+    let pisSemDigitos = "";
+    for (let i = 0; i < 10; i++) {
+        pisSemDigitos += Math.floor(Math.random() * 10);
+    }
+    return pisSemDigitos;
+}
+function calcularDigitoPIS(pis) {
+    const multiplicadores = [3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    let soma = 0;
+    for (let i = 0; i < pis.length; i++) {
+        soma += parseInt(pis.charAt(i)) * multiplicadores[i];
+    }
+   const resto = soma % 11;
+const digito = 11 - resto;
+return digito > 9 ? 0 : digito;
+}
+function validarCPF(cpf) {
+  if (cpf.length !== 11) {
+    return false;
+  }
+  const cpfSemDigitos = cpf.slice(0, -2);
+  const primeiroDigito = calcularDigitoCPF(cpfSemDigitos);
+  const segundoDigito = calcularDigitoCPF(cpfSemDigitos + primeiroDigito);
+  return cpf.slice(-2) === `${primeiroDigito}${segundoDigito}`;
+}
+function validarPIS(pis) {
+  if (pis.length !== 11) {
+    return false;
+  }
+  const pisSemDigitos = pis.slice(0, -1);
+  const digito = calcularDigitoPIS(pisSemDigitos);
+  return pis.slice(-1) === `${digito}`;
+}
+function validarCpfPis() {
+  const cpfPis = document.getElementById("validarCpfPisInput").value;
+  if (validarCPF(cpfPis)) {
+    alert("CPF é válido!");
+  } else {
+    alert("CPF é inválido!");
+  }
+}
+</script></body>
+</html>
+<title></title>
+<br />
+<br />
+<br />
+<br />
+Copyright &copy;2023 - Delean Mafra -&nbsp;ALL RIGHTS RESERVED<br />
+<script>
+		function validarPIS() {
+			const pis = document.getElementById("pis").value.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+
+			if (pis.length !== 11 || pis.match(/^(.)\1+$/)) { // Verifica se o PIS tem 11 dígitos e não é uma sequência repetida
+				mostrarMensagem("PIS inválido");
+				return;
+			}
+function limparPontuacao() {
+  const input = document.getElementById("validarCpfPisInput");
+  const cpf = input.value.replace(/\D/g, "");
+  input.value = cpf;
+}
+
+			let soma = 0;
+			let peso = 3;
+
+			for (let i = 0; i < 10; i++) {
+				soma += pis.charAt(i) * peso;
+				peso--;
+				if (peso < 2) peso = 9;
+			}
+			const digitoVerificador = 11 - (soma % 11);
+			if (digitoVerificador === 10 || digitoVerificador === 11) { // Se o dígito verificador calculado for 10 ou 11, o dígito verificador válido é 0
+				if (pis.charAt(10) == 0) {
+					mostrarMensagem("PIS válido");
+				} else {
+					mostrarMensagem("PIS inválido");
+				}
+			} else { // Caso contrário, o dígito verificador válido é igual ao dígito calculado
+				if (pis.charAt(10) == digitoVerificador) {
+					mostrarMensagem("PIS válido");
+				} else {
+					mostrarMensagem("PIS inválido");
+				}
+			}
+		}
+		function mostrarMensagem(mensagem) {
+			alert(mensagem);
+		}
+	</script>
+<style type="text/css">body {
+			background-color: #0a3d62;
+			color: #fff;
+			font-family: Arial, sans-serif;
+		}
+		.container {
+			width: 80%;
+			margin: 0 auto;
+			padding: 20px;
+			background-color: #0b1e2b;
+			border-radius: 10px;
+			box-shadow: 0px 0px 20px rgba(0,0,0,0.6);
+		}
+		h1, h2, label {
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+		input[type=number] {
+			padding: 5px;
+			border-radius: 5px;
+			border: none;
+			background-color: #f1f1f1;
+			margin-bottom: 10px;
+		}
+		button {
+			padding: 10px;
+			border-radius: 5px;
+			border: none;
+			background-color: #2ecc71;
+			color: #fff;
+			font-weight: bold;
+			cursor: pointer;
+			margin-bottom: 20px;
+		}
+		.resultado {
+			padding: 20px;
+			background-color: #16a085;
+			border-radius: 5px;
+			box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+		}
+</style>
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  /* Estilo para a aba ativa */
+  ::-webkit-scrollbar-thumb {
+    background-color: purple;
+  }
+  /* Estilo para as abas inativas */
+  ::-webkit-scrollbar-track {
+    background-color: purple;
+  }
+</style>
+  <title>Abas</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+ <style>
+    #tabs {
+      width: 1600px;
+      height: 800px;
+    }
+    .ui-widget-header {
+      background-color: #b9cd6d;
+    }
+  </style>
+</head>
+<body>  
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Gerador de Datas</a></li>
+    <li><a href="#tabs-2">Gerador de nomes</a></li>
+    <li><a href="#tabs-3">CNPJ</a></li>
+    <li><a href="#tabs-4">Matricula</a></li>
+    <li><a href="#tabs-5">Gerador de AFD fictício</a></li>
+    <li><a href="#tabs-6">Calculadora de jornada</a></li>
+    <li><a href="#tabs-7">Removedor de pontos</a></li>
+    <li><a href="#tabs-8">Aba 8</a></li>
+    <li><a href="#tabs-9">Aba 9</a></li>
+    <li><a href="#tabs-10">Informações adicionais</a></li>
+  </ul>
+  <div id="tabs-1">
+    <head>
+  <title>Gerador de Datas</title>
+</head>
+<body>
+  <button onclick="gerarData()">Gerar Data</button>
+  <p id="dataGerada"></p>
+  <script>
+    function gerarData() {
+      var data = new Date();
+      var anoAtual = data.getFullYear();
+      var anoAleatorio = Math.floor(Math.random() * (anoAtual - 1950) + 1950); // Gera um ano entre 1950 e o ano atual
+
+      while (anoAleatorio === 2023) {
+        anoAleatorio = Math.floor(Math.random() * (anoAtual - 1950) + 1950);
+      }
+      var mesAleatorio = Math.floor(Math.random() * 12) + 1; // Gera um número de 1 a 12 para representar o mês
+      var diaAleatorio = Math.floor(Math.random() * 31) + 1; // Gera um número de 1 a 31 para representar o dia
+      var dataGerada = new Date(anoAleatorio, mesAleatorio - 1, diaAleatorio);
+      document.getElementById("dataGerada").textContent = dataGerada.toLocaleDateString();
+    }
+  </script>
+</body>
+</html>
+      <html>
+<head>
+  <title>Gerador de Nomes</title>
+</head>
+  </div>
+  <div id="tabs-2">
+     <html>
+<head>
+  <title>Gerador de Nomes</title>
+</head>
+<body>
+  <button onclick="gerarNome()">Gerar Nome</button>
+  <p id="nomeGerado"></p>
+  <script>
+    // Arrays com nomes fictícios
+    var nomes = ["João", "Maria", "Pedro", "Ana", "Carlos", "Mariana", "André", "Laura", "Rafael", "Isabela", "Fernando", "Camila", "Gustavo", "Juliana", "Rodrigo", "Amanda", "Lucas", "Carolina", "Tiago", "Gabriela", "Eduardo", "Larissa", "Daniel", "Letícia", "Marcelo", "Beatriz", "Alexandre", "Vanessa", "Felipe", "Manuela", "Renato", "Helena", "Guilherme", "Natália", "Hugo", "Sophia", "Leonardo", "Júlia", "Vitor", "Luiza", "Thiago", "Débora", "Matheus", "Carla", "Bruno", "Renata", "Ricardo", "Tatiana", "Paulo", "Patrícia", "Diego", "Mariane", "Sérgio", "Sabrina", "Roberto", "Bianca", "Miguel", "Mara", "Cristiano", "Raquel", "Raul", "Valentina", "Alex", "Priscila", "Arthur", "Luana", "Nuno", "Susana", "Simão", "Teresa", "Fábio", "Inês", "Pedro", "Rita", "Daniel", "Sandra", "Luís", "Cátia", "André", "Marta", "Nelson", "Carina", "Hélder", "Andreia", "Ricardo", "Carmen", "Samuel", "Isabel", "Marco", "Carla", "Tiago", "Mónica", "José", "Catarina", "Manuel", "Lúcia", "António", "Filipa", "Joana", "Andreia", "Rui", "Sara", "Jaime", "Liliana", "Mário", "Jéssica", "Adriano", "Diana", "Diogo", "Margarida", "Jorge", "Telma", "Carlos", "Filipe", "Rafael", "Maria", "Rita", "Rogério", "Ana", "Augusto", "Patrícia", "Maurício", "Teresa", "Cláudio", "Andreia", "Alberto", "Sandra", "André", "Catarina", "Emanuel", "Susana", "Filipe", "Sílvia", "Tomás", "Célia", "Guilherme", "Rita", "Henrique", "Joana", "Francisco", "Mónica", "Leonardo", "Inês", "Santiago", "Bianca", "Joaquim", "Rafaela", "Luiz", "Lara", "Enzo", "Vitória", "Elias", "Lívia", "Lorenzo", "Valentina", "Emanuel", "Ana", "Carlos", "Mariana", "André", "Laura", "Rafael", "Isabela", "Fernando", "Camila", "Gustavo", "Juliana", "Rodrigo", "Amanda", "Lucas", "Carolina", "Tiago", "Gabriela"];
+    var sobrenomes = ["Silva", "Santos", "Souza", "Oliveira", "Pereira", "Rodrigues", "Almeida", "Ferreira", "Lima", "Gomes", "Costa", "Ribeiro", "Martins", "Rocha", "Mendes", "Carvalho", "Nascimento", "Cavalcanti", "Barbosa", "Fernandes", "Sousa", "Melo", "Freitas", "Cardoso", "Santana", "Castro", "Andrade", "Araújo", "Azevedo", "Campos", "Duarte", "Figueiredo", "Gonçalves", "Lopes", "Marques", "Miranda", "Monteiro", "Morais", "Moreira", "Nunes", "Pinto", "Reis", "Sampaio", "Santos", "Teixeira", "Vieira", "Vargas", "Xavier", "Zimmermann", "Abreu", "Aguiar", "Albuquerque", "Alencar", "Alves", "Amaral", "Amorim", "Andrade", "Antunes", "Araújo", "Assis", "Azevedo", "Bastos", "Batista", "Bezerra", "Borges", "Braga", "Brito", "Cabral", "Caldeira", "Caldas", "Camacho", "Campos", "Cardoso", "Carneiro", "Carvalho", "Cavalcante", "Chaves", "Coelho", "Cordeiro", "Correa", "Cortês", "Coutinho", "Cruz", "Cunha", "Dias", "Domingues", "Duarte", "Elias", "Esteves", "Fagundes", "Farias", "Fernandes", "Ferraz", "Ferreira", "Figueiredo", "Flores", "Fontes", "Freitas", "Garcia", "Gaspar", "Gomes", "Gonçalves", "Guimarães", "Jesus", "Lima", "Lopes", "Luz", "Madeira", "Magalhães", "Marafigo", "Marinho", "Marques", "Martins", "Medeiros", "Melo", "Mendes", "Miranda", "Moraes", "Moreira", "Morais", "Nascimento", "Neves", "Nogueira", "Noronha", "Novais", "Oliveira", "Pacheco", "Paes", "Pais", "Peixoto", "Pereira", "Pinto", "Ramos", "Reis", "Ribeiro", "Rocha", "Rodrigues", "Sá", "Santana", "Santiago", "Santos", "Seabra", "Silva", "Simões", "Soares", "Sousa", "Souza", "Tavares", "Teixeira", "Torres", "Valente", "Vasconcelos", "Veiga", "Viana", "Vieira", "Vilela", "Xavier", "Zimmermann"];
+    function gerarNome() {
+      var nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];
+      var sobrenomeAleatorio = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
+      var nomeCompleto = nomeAleatorio + " " + sobrenomeAleatorio;
+      document.getElementById("nomeGerado").textContent = nomeCompleto;
+    }
+  </script>
+</body>
+</html>
+  </div>
+  <div id="tabs-3">
+<html>
+<head>
+    <title>Gerador de CNPJ</title>
+    <script>
+        function gerarCNPJ() {
+            var n1 = Math.floor(Math.random() * 10);
+            var n2 = Math.floor(Math.random() * 10);
+            var n3 = Math.floor(Math.random() * 10);
+            var n4 = Math.floor(Math.random() * 10);
+            var n5 = Math.floor(Math.random() * 10);
+            var n6 = Math.floor(Math.random() * 10);
+            var n7 = Math.floor(Math.random() * 10);
+            var n8 = Math.floor(Math.random() * 10);
+            var n9 = 0;
+            var n10 = 0;
+            var n11 = 0;
+            var n12 = 1;
+            var digito1 = (n12 * 2 + n11 * 3 + n10 * 4 + n9 * 5 + n8 * 6 + n7 * 7 + n6 * 8 + n5 * 9 + n4 * 2 + n3 * 3 + n2 * 4 + n1 * 5) % 11;
+            digito1 = digito1 < 2 ? 0 : 11 - digito1;
+
+            var digito2 = (digito1 * 2 + n12 * 3 + n11 * 4 + n10 * 5 + n9 * 6 + n8 * 7 + n7 * 8 + n6 * 9 + n5 * 2 + n4 * 3 + n3 * 4 + n2 * 5 + n1 * 6) % 11;
+            digito2 = digito2 < 2 ? 0 : 11 - digito2;
+            var cnpj = '' + n1 + n2 + '.' + n3 + n4 + n5 + '.' + n6 + n7 + n8 + '/' + n9 + n10 + n11 + n12 + '-' + digito1 + digito2;
+            document.getElementById('cnpj').innerHTML = cnpj;
+        }
+    </script>
+</head>
+<body>
+    <h1>Gerador de CNPJ</h1>
+    <button onclick="gerarCNPJ()">Gerar CNPJ</button>
+    <p id="cnpj"></p>
+</body>
+</html>
+  </div>
+  <div id="tabs-4">
+<html>
+<head>
+  <style>
+    .titulo {
+      font-size: 24px; /* Tamanho da fonte desejado */
+    }
+  </style>
+  <script>
+    function gerarMatricula() {
+      var matricula = "";
+      var digitos = "0123456789";
+
+      for (var i = 0; i < 6; i++) {
+        var randomIndex = Math.floor(Math.random() * digitos.length);
+        matricula += digitos.charAt(randomIndex);
+      }
+      return matricula;
+    }
+    function exibirMatricula() {
+      var numeroMatricula = gerarMatricula();
+      document.getElementById("matricula").textContent = numeroMatricula;
+    }
+  </script>
+</head>
+<body>
+  <h4>Gerador de Número de Matrícula</h4>
+  <button onclick="exibirMatricula()">Gerar Matrícula</button>
+  <p>Número de Matrícula: <span id="matricula"></span></p>
+</body>
+</html>
+  </div>
+  <div id="tabs-5">
+<!DOCTYPE html>
+<html lang="br-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="AfdTittle">Gerador de AFD</title>
+
+    <link rel="stylesheet" type="text/css" href="html{
+    margin: 0;
+    padding: 0;
+}
+body{
+    margin: 0;
+    padding: 0;
+}
+.head{
+    display: block;
+    width: 60%;
+    text-align: center;
+}
+.body{
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center
+}
+.nav{
+    border: solid 1px #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    width: 60%;
+    min-width: 830px;
+    min-height: 230px;
+    background-color: rgb(231, 231, 231);
+    display: block;
+    height: 80%;
+    box-shadow: inset 0 0 1em rgb(231, 231, 231), 0 0 0.4em rgb(51, 51, 51);
+    
+}
+.periodo{
+    display: inline-block;
+    margin-top: 2%;
+}
+input{
+    margin-bottom: 2%;
+    border: solid #ccc;
+    border-radius: 4px;
+
+}
+input:hover{
+    border: solid 1px black;
+    border-radius: 4px;
+}
+textarea{
+    border-radius: 4px;
+}
+textarea:hover{
+    border: solid 1px black;
+    border-radius: 4px;
+}
+.pis{
+    display: block;
+    margin-top: 2%;
+}
+.pisc{
+    font-size: 15px;
+    height: 15px;
+    min-height: 20px;
+    max-width: 98%;
+    max-height: 10%;
+    margin-bottom: 1%;
+    width: 396px;
+}
+label,h1,input{
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(44, 44, 44);
+}
+
+label{
+    margin-left: 3%;
+}
+.batidac{
+    margin-left: 3%;
+    width: 85px;
+}
+
+h1,p{
+    display: block;
+}
+label{
+    font-size: 20px;
+}
+input, textarea{
+    font-size: 18px;
+    border-radius: 2px;
+    border: solid 1px rgb(126, 124, 124);
+}
+
+.gerar{
+    color: white;
+    background-color: rgb(66, 65, 65);
+    height: 50px;
+    width: 110px;
+    border-radius: 25px;
+    border: solid 1px;
+    margin-bottom: 2%;
+    margin-top: 1%;
+
+}
+.divbutton{
+    text-align: center;
+}
+.gerar:hover{
+    border: solid 1px rgb(66, 66, 66);
+    background-color: rgb(46, 46, 46);
+    width: 150px;
+    transition-duration: 350ms;
+    
+}
+.gerar:active{
+    border: solid 1px black;
+    background: linear-gradient(0.25turn, rgb(36, 36, 36), rgb(88, 88, 88));
+    transition-duration: 10ms;
+}
+h1{
+    display: inline-block;
+    color: rgb(77, 77, 77);
+}
+.img{
+    margin-left: 1%;
+}
+#resultado{
+    width: 60%;
+    max-width: 60%; 
+    color: rgb(255, 255, 255)
+}
+#tutorial{
+    font-family: Arial, Helvetica, sans-serif;
+    margin-left: 85%;
+    overflow: hidden;
+    color: black;
+    font-size: 14px;
+    background-color: rgb(238, 62, 62);
+    border-radius: 4px;
+    border: solid 1px rgb(238, 62, 62);
+    margin-top: 1%;
+    margin-bottom: -5%;
+    padding: 7px;
+    width: 65px;
+}
+#tutorial:hover{
+    box-shadow: inset 0 0 0em rgb(0, 0, 0), 0 0 0.2em rgb(51, 51, 51);
+}
+#tutorial:active{
+    box-shadow: inset 0 0 0em rgb(240, 103, 103), 0 0 0.5em rgb(51, 51, 51);
+    
+}
+.msgs{
+    width: 270px;
+    height: 10px;
+    padding: 1%;
+    position: absolute;
+    margin-left: 10%;
+    margin-top: 4%;
+    background-color: rgba(245, 46, 46, 0.877);
+    border-radius:  1px 8px  8px ; 
+    font-size: 15px;
+    color: black;
+    visibility: hidden;
+    padding-top: 1px;
+    padding-bottom: 43px;
+}
+.msgs:hover{
+    background-color: rgba(233, 53, 53, 0.993)
+}
+#textoSabado{
+    position: relative;;
+    width: 250px ;
+    margin-left: -260px;
+
+}
+#closes{
+    background-color: transparent;
+    border: transparent;
+    font-size: 15px;
+}
+#closes:hover{
+    color: white;
+}
+#closes:active{
+    color: black;
+}
+.btns{
+    position: absolute;
+    width: 20px;
+    height: 40px;
+    margin-left: 87%;
+ 
+}
+.msgd{
+    width: 270px;
+    height: 25px;
+    padding: 1%;
+    position: absolute;
+    margin-left: 10%;
+    margin-top: 4%;
+    background-color: rgba(245, 46, 46, 0.877);
+    border-radius:  1px 8px  8px ; 
+    font-size: 15px;
+    color: black;
+    visibility: hidden;
+    padding-top: 3px;
+    z-index: 0;
+}
+.msgd:hover{
+    background-color: rgba(233, 53, 53, 0.993)
+}
+#closed{
+    background-color: transparent;
+    border: transparent;
+    font-size: 15px;
+}
+#closed:hover{
+    color: white;
+}
+#closed:active{
+    color: black;
+}
+.btnd{
+    position: absolute;
+    width: 20px;
+    height: 40px;
+    margin-left: 87%;
+ 
+}
+.header{
+    background-color: rgb(0, 0, 0);
+    position: fixed;
+    display: inline-block;
+    width: 100%;
+    height: 50px;
+}
+#h1Header{
+    margin-left: 3%;
+}
+.abas{
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+}
+.titulo{
+    position: fixed;
+    display: inline-block;
+    height: 50px;
+    width: 200px;
+}
+#GeradorAfd{
+    position: fixed;
+    display: inline-block;
+    height: 47px;
+    width: 180px;
+    margin-left: 16%;
+    border: solid 0px rgb(0, 131, 192);
+    border-bottom-width: 3px hidden;
+}
+#GeradorAfd p{
+    color: white;
+}
+#GeradorAfd p:hover{
+    color: rgb(0, 131, 192);
+}
+#ValidadorHolerite{
+    position: fixed;
+    display: inline-block;
+    height: 47px;
+    width: 180px;
+    margin-left: 42%;
+    border: solid 0px rgb(0, 131, 192);
+    border-bottom-width: 3px hidden;
+    color: white;
+}
+#ValidadorHolerite p{
+    color:white;
+}
+#ValidadorHolerite p:hover{
+    color: rgb(0, 131, 192);
+    
+}
+#GeradorHolerite{
+    color: white;
+    position: fixed;
+    display: inline-block;
+    height: 47px;
+    width: 180px;
+    margin-left: 70%;
+    border: solid 0px rgb(0, 131, 192);
+    border-bottom-width: 3px hidden;
+
+
+}
+.teste{
+    text-align: center;
+}
+#soapKey{
+
+    font-size: medium;
+    letter-spacing: 1px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    border-radius: 4px;
+    border: solid 1px green;
+    padding: 5px;
+    margin-top: 3%;
+    margin-bottom: 3%;
+    background-color: rgb(9, 180, 9);
+    width: 120px;
+    height: 35px;
+}
+#soapKey:hover{
+    background-color: rgb(0, 161, 0);
+}
+#soapKey:active{
+    background-color: rgb(0, 122, 0);
+}
+#file-input{
+    margin-top: 3%;
+    margin-left: 3%;
+    border: 0px;
+}
+
+.holeriteinput{
+    display: inline-block;
+    margin-left: 3%;
+    width: 340px;
+    height: 20px;
+}
+.labelinput{
+    display: inline-block;
+}
+.labelinput>.holeriteinput{
+    margin-left: 0.1%;
+    display: inline-block;
+}
+#competencia{
+    width: 200px;
+    display: inline-block;
+}
+#toolTip{
+    color: white;
+    text-align: left;
+    display: inline-block;
+    border-radius: 100px;
+    border: solid 0px;
+    background-color: black;
+}
+#toolTip:active{
+    color: black;
+}
+#resultTool{
+    font-family: Arial, Helvetica, sans-serif;
+    border: solid 1px rgb(145, 145, 145);
+    border-radius: 0px 8px 8px 8px;
+    background-color: white;
+    position: fixed;
+    margin-left: 12%;
+    margin-top: 1%;
+    max-width: 360px ;
+    padding: 10px;
+    visibility: hidden;
+}
+#file-contents{
+    color: rgba(255, 255, 255, 0);
+}
+.error{
+    min-width: 800px;
+    max-width: 1500px;
+    max-height: 600px;
+}
+#result>p{
+    line-height: 25px;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 5px;
+    color: rgb(151, 0, 0);
+    background-color: rgba(255, 101, 101, 0.863);
+}
+">
+</head>
+<body>
+    <div class="header">
+        <div class="titulo">
+        </div>
+        <a href="/">
+            <div class="abas" id="GeradorAfd">                
+            </div>  
+        </a>
+            <a href="ValidadorHolerite">
+            <div class="abas" id="ValidadorHolerite" onclick="abaHolerite()">
+            </div>
+        </a>
+        <a href="GeradorHolerite">
+            <div class="abas" id="GeradorHolerite">
+            </div>
+        </a>
+    </div>
+</br>
+</br>
+</br>
+<div class="body"><br>
+    <div class="head"> 
+    </div>
+</br>
+   <div id="nav" class="nav">
+       <form action="https://drive.google.com/file/d/1avb22mwEn00ZCfsCFNr85EDQ6CE3Xc0K/view?usp=sharing" target="_blank">
+            </button>
+        </form>
+    <div id="msgs" class="msgs">
+        <div class="btns">
+        </div>
+    </div>
+    <div id="msgd" class="msgd">
+        <div class="btnd">         
+        </div>        
+    </div>
+        <label class="periodo">
+            Periodo Inicial<br>
+            <input id="dataInicial" class="inputp" name="data" onchange="ignoraweek()" type="date" value="" tittle="Periodo inicial">
+        </label>
+        <label class="periodo">
+            Periodo Final<br>
+            <input id="dataFinal" class="inputp" name="data" type="date" value="" tittle="Periodo final">
+        </label>
+        <label class="pis">
+            Pis<br>
+            <textarea id="pisColaborador" class="pisc" name="pis" value=""
+            placeholder="Insira o PIS(separado por virgula)" rows="5" cols="33"></textarea>
+        </label>
+        <label id= "batidasAll" class="batidas">
+            Batidas<br>
+            <input id="batida1" class="batidac"  name="batida" type="time">
+            <input id="batida2" class="batidac"  name="batida" type="time">
+            <input id="batida3" class="batidac"  name="batida" type="time">
+            <input id="batida4" class="batidac"  name="batida" type="time">
+        </label>
+        <br>
+        <label>Batidas aleatórias
+            <input id="aleatorio" class="aleatorio" onclick="checkValidacao(event)" name="aleatorio" type="checkbox">
+        </label>
+        <label id="saturday">Ignora Sábados
+            <input id="sabado" class="domingo" onclick="sabado()" name="aleatorio" type="checkbox" disabled>
+        </label>
+        <label id="sunday">Ignora Domingos
+            <input id="domingo" class="sabado" onclick="domingo()" name="aleatorio" type="checkbox" disabled>
+        </label>
+        <div class="divbutton">
+            <button id="gerarAfd" class="gerar" name="gerar" onclick="valueNumber(event)">Gerar AFD</button>
+        </div>        
+    </div>
+    <div id="resultado" style="display: block;">
+    <br>        
+    </div>
+</div>
+<script>
+    if(document.getElementById("title") != "Gerador de AFD"){
+    document.getElementById("GeradorAfd").getElementsByTagName("P")[0].style.color = "rgb(0, 131, 192)";
+    document.getElementById("GeradorAfd").style.borderBottomWidth = "3px"
+    }
+    function ignoraweek(){
+        document.getElementById("sabado").disabled = false;
+        document.getElementById("domingo").disabled = false;
+    }
+    function closedSabado(){
+        document.getElementById("msgs").style.visibility = "hidden"
+    }
+    function closedDomingo(){
+        document.getElementById("msgd").style.visibility = "hidden"
+    }
+    ''
+    function sabado() {
+    var sabado = document.getElementById("sabado");
+    var domingo = document.getElementById("domingo");
+    var datainicial = document.getElementById("dataInicial").value;
+    var newDateInicial = new Date(datainicial);
+    var datafinal = document.getElementById("dataFinal").value;
+    if(sabado.checked && newDateInicial.getDay() == 5){
+        document.getElementById("msgs").style.visibility = "visible"
+        document.getElementById("msgs").style.transitionDelay = "200ms"
+        document.getElementById("dataInicial").value = "";
+        sabado.checked = false;
+}if(sabado.checked){
+    document.getElementById("saturday").style.textDecoration = "line-through"
+}else{
+    document.getElementById("saturday").style.textDecoration = "none"
+}
+}
+    function domingo() {
+    var sabado = document.getElementById("sabado");
+    var domingo = document.getElementById("domingo");
+    var datainicial = document.getElementById("dataInicial").value;
+    var newDateInicial = new Date(datainicial);
+    var datafinal = document.getElementById("dataFinal").value
+    if(domingo.checked && newDateInicial.getDay() == 6){
+        document.getElementById("msgd").style.visibility = "visible";
+        document.getElementById("msgd").style.transitionDelay = "200ms"
+        document.getElementById("dataInicial").value = "";
+        domingo.checked = false;
+}if(domingo.checked){
+    document.getElementById("sunday").style.textDecoration = "line-through"
+}else{
+    document.getElementById("sunday").style.textDecoration = "none"
+}
+}
+    function datasif(startDate, endDate, steps = 1){
+    const dateArray = [];
+    let currentDate = new Date(startDate);
+    let currentEndDate = new Date(endDate)
+    currentEndDate.setHours(24)
+    currentDate.setHours(24)
+    console.log(currentDate)
+    startDate = startDate.setUTCDate
+    while (currentDate <= new Date(currentEndDate)) {
+        dateArray.push(new Date(currentDate));
+        currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+
+    var sabado = document.getElementById("sabado");
+    var domingo = document.getElementById("domingo");
+    var datainicial = document.getElementById("dataInicial").value;
+    var datafinal = document.getElementById("dataFinal").value
+
+        if(sabado.checked && !domingo.checked){
+            if(currentDate.getDay() == 5) {
+                steps = 2
+            }else {
+                steps = 1
+            }
+        }
+        if(domingo.checked && !sabado.checked){
+            if(currentDate.getDay() == 6) {
+                steps = 2
+            }else {
+                steps = 1
+            }
+        }
+        if(domingo.checked && sabado.checked){
+            if(currentDate.getDay() == 5) {
+                steps = 3
+            }else {
+                steps = 1
+            }
+        }
+        
+    }
+
+    return dateArray;
+}
+
+
+    setInterval(function(d){
+
+        var resetTimeBatida1 = document.getElementById("batida1");
+        clearTimeout( resetTimeBatida1);
+
+        var resetTimeBatida2 = document.getElementById("batida2");
+        clearTimeout( resetTimeBatida2);
+
+        var resetTimeBatida3 = document.getElementById("batida3");
+        clearTimeout( resetTimeBatida3);
+
+        var resetTimeBatida4 = document.getElementById("batida4");
+        clearTimeout( resetTimeBatida4);
+
+        var batida1 = document.getElementById("batida1");
+        var valueBatida1 = batida1.value;
+
+        var batida2 = document.getElementById("batida2");
+        var valueBatida2 = batida2.value;
+
+        var batida3 = document.getElementById("batida3");
+        var valueBatida3 = batida3.value;
+
+        var batida4 = document.getElementById("batida4");
+        var valueBatida4 = batida4.value;
+
+        var gerarAfd = document.getElementById("gerarAfd");
+
+        var aleatorio = document.getElementById("aleatorio");
+        var sabado = document.getElementById("sabado");
+        var sabado = document.getElementById("domingo");
+        var sabadoValue = sabado.value;
+        var domingoValue = domingo.value;
+        var aleatorioValue = aleatorio.value;
+
+        clearTimeout ( sabado );
+        clearTimeout (sabadoValue );
+        clearTimeout ( domingo );
+        clearTimeout ( domingoValue );
+        clearTimeout( aleatorio );
+        clearTimeout( aleatorioValue );
+
+},300)
+
+
+    function valueNumber(e) {
+
+        batidaErro1 = document.getElementById("batida1");
+        batidaErro2 = document.getElementById("batida2");
+        batidaErro3 = document.getElementById("batida3");
+        batidaErro4 = document.getElementById("batida4");
+        pisErro = document.getElementById("pisColaborador");
+
+        if(document.getElementsByClassName("batidac").value = ""){
+        document.getElementById("pisColaborador") = "";
+
+    }if(!document.getElementById("aleatorio").checked && document.getElementById("batida1").value == ""){
+        document.getElementById("batida1").style.border = "solid rgb(255, 0, 0)";
+        document.getElementById("pisColaborador") = "";
+        
+
+    }   if(!document.getElementById("aleatorio").checked && document.getElementById("batida2").value == ""){
+        document.getElementById("batida2").style.border = "solid rgb(255, 0, 0)";
+        document.getElementById("pisColaborador") = "";
+
+
+    }   if(!document.getElementById("aleatorio").checked && document.getElementById("batida3").value == ""){
+        document.getElementById("batida3").style.border = "solid rgb(255, 0, 0)";
+        document.getElementById("pisColaborador") = "";
+
+
+    }   if(!document.getElementById("aleatorio").checked && document.getElementById("batida4").value == ""){
+        document.getElementById("batida4").style.border = "solid rgb(255, 0, 0)";
+        document.getElementById("pisColaborador") = "";
+
+    } if(document.getElementById("pisColaborador").value == ""){
+        document.getElementById("pisColaborador").style.border = "solid rgb(255, 0, 0)";
+
+    }if(!document.getElementById("aleatorio").checked && document.getElementById("dataInicial").value == ""){
+        document.getElementById("dataInicial").style.border = "solid rgb(255, 0, 0)";
+    }if(!document.getElementById("aleatorio").checked && document.getElementById("dataFinal").value == ""){
+        document.getElementById("dataFinal").style.border = "solid rgb(255, 0, 0)";
+    }    
+    else{
+        document.getElementById("batida1").style.border = "solid 1px #ccc";
+        document.getElementById("batida2").style.border = "solid 1px #ccc";
+        document.getElementById("batida3").style.border = "solid 1px #ccc";
+        document.getElementById("batida4").style.border = "solid 1px #ccc";
+        document.getElementById("pisColaborador").style.border = "solid 1px #ccc";
+        document.getElementById("dataInicial").style.border = "solid 1px #ccc";
+        document.getElementById("dataFinal").style.border = "solid 1px #ccc";
+      var aleatorio = document.getElementById("aleatorio");
+
+      clear = document.querySelector("#resultado");
+      document.querySelector("#resultado").innerHTML = "";
+      
+      var pis = document.querySelector("#pisColaborador");
+      var valorpis = `${pis.value}`;
+      var pisSplit = valorpis.split(',');
+
+      //let pis0 = pisSplit[0]
+      //let pis1 = pisSplit[1]
+      //let pis2 = pisSplit[2]
+      var batida1 = document.querySelector("#batida1");
+      var marc1 = batida1.value;
+      var replacePonto1 = (marc1).replaceAll(":", "");
+
+      var batida2 = document.querySelector("#batida2");
+      var marc2 = batida2.value;
+      var replacePonto2 = (marc2).replaceAll(":", "");
+
+      var batida3 = document.querySelector("#batida3");
+      var marc3 = batida3.value;
+      var replacePonto3 = (marc3).replaceAll(":", "");
+
+      var batida4 = document.querySelector("#batida4");
+      var marc4 = batida4.value;
+      var replacePonto4 = (marc4).replaceAll(":", "");
+      var periodoi = document.querySelector("#dataInicial");
+      var datai = periodoi.value;
+      let datas = datai.split('-');
+      let anoi = datas[0]
+      let mesi = datas[1]
+      let diai = datas[2]
+      let dataBraba = diai+mesi+anoi;     
+      var periodof = document.querySelector("#dataFinal");
+      var dataf = periodof.value;
+      let datasf = dataf.split('-');
+      let anof = datas[0]
+      let mesf = datas[1]
+      let diaf = datas[2]
+      let dataBrabaf = diaf+mesf+anof ;
+      let checkbox = document.getElementById("aleatorio");
+      if(checkbox.checked){
+      const dates = datasif(datai,  dataf).map(elem => elem.toLocaleDateString());
+      console.log(dates);
+      let periodos = dates.value;
+            for (let i=0; i < pisSplit.length; i++){
+                console.log(pisSplit[i]);
+                var NSR = 100000000;
+
+                for (let j=0; j < dates.length; j++){
+
+
+                    for(let i=0; i < pisSplit.length; i++){
+                        
+
+batida1.value += Math.floor(Math.random() * (23 + 1))
+batida1.value += Math.floor(Math.random() * (5 + 1))
+batida1.value += Math.floor(Math.random() * (9 + 1))
+
+batida2.value += Math.floor(Math.random() * (23 + 1));
+batida2.value += Math.floor(Math.random() * (5 + 1));
+batida2.value += Math.floor(Math.random() * (9 + 1));
+
+batida3.value += Math.floor(Math.random() * (23 + 1));
+batida3.value += Math.floor(Math.random() * (5 + 1));
+batida3.value += Math.floor(Math.random() * (9 + 1));
+
+batida4.value += Math.floor(Math.random() * (23 + 1));
+batida4.value += Math.floor(Math.random() * (5 + 1));
+batida4.value += Math.floor(Math.random() * (9 + 1));
+
+while(batida1.value.length < 4){ 
+    batida1.value = "0" + batida1.value;
+    batida1.value.length++;
+}
+while(batida2.value.length < 4){
+    batida2.value = "0" + batida2.value;
+    batida2.value.length++;
+}
+while(batida3.value.length < 4){
+    batida3.value = "0" + batida3.value;
+    batida3.value.length++;
+}
+while(batida4.value.length < 4){
+    batida4.value = "0" + batida4.value;
+    batida4.value.length++;
+}
+var espaco = "  "
+while(espaco.length < 150){
+    espaco = espaco + " ";
+}
+       document.querySelector("#resultado").innerHTML +=
+`0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
+${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida1.value}0${pisSplit[i]}
+0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
+${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida2.value}0${pisSplit[i]}
+0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
+${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida3.value}0${pisSplit[i]}
+0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
+${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida4.value}0${pisSplit[i]}
+`
+
+      /*"0000000001156198340000123000000000000" + 
+      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
+      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
+      batida1.value + "0" + pisSplit[i] + "<br>" + "<br>" + 
+      "0000000001156198340000123000000000000" + 
+      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
+      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
+      batida2.value + "0" + pisSplit[i] + "<br>" + "<br>" +
+      "0000000001156198340000123000000000000" + 
+      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
+      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
+      batida3.value + "0" + pisSplit[i] + "<br>" + "<br>" +
+      "0000000001156198340000123000000000000" + 
+      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
+      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
+      batida4.value + "0" + pisSplit[i] + "<br>" + "<br>";*/
+
+            batida1.value = "";
+            batida2.value = "";
+            batida3.value = "";
+            batida4.value = "";
+   
+        
+    }
+}
+
+    }
+      }else{
+          
+      for (let i=0; i < pisSplit.length; i++){
+          console.log(pisSplit[i]);
+          var NSR = 100000000;
+
+
+          const dates = datasif(datai,  dataf).map(elem => elem.toLocaleDateString());
+          for (let j=0; j < dates.length; j++){
+            var espaco = "  "
+while(espaco.length < 150){
+    espaco = espaco + " ";
+}
+
+
+            document.querySelector("#resultado").innerHTML +=
+`0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
+${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida1.value.replaceAll(":", "")}0${pisSplit[i]}
+0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
+${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida2.value.replaceAll(":", "")}0${pisSplit[i]}
+0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
+${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida3.value.replaceAll(":", "")}0${pisSplit[i]}
+0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
+${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida4.value.replaceAll(":", "")}0${pisSplit[i]}
+`
+      
+
+          /*document.querySelector("#resultado").innerHTML +=
+      "0000000001156198340000123000000000000" + 
+      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
+      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
+      batida1.value.replaceAll(":", "") + "0" + pisSplit[i] + "<br>" + "<br>" + 
+      "0000000001156198340000123000000000000" + 
+      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
+      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
+      batida2.value.replaceAll(":", "") + "0" + pisSplit[i] + "<br>" + "<br>" +
+      "0000000001156198340000123000000000000" + 
+      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
+      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
+      batida3.value.replaceAll(":", "") + "0" + pisSplit[i] + "<br>" + "<br>" +
+      "0000000001156198340000123000000000000" + 
+      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
+      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
+      batida4.value.replaceAll(":", "") + "0" + pisSplit[i] + "<br>" + "<br>"; */
+
+    }
+}
+    
+}
+    var textToSave = document.getElementById('resultado').innerHTML;
+    var hiddenElement = document.createElement('a');
+
+    hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
+    hiddenElement.target = '_blank';
+    hiddenElement.download = 'AfdFicticio.txt';
+    hiddenElement.click();
+
+    // document.getElementById("baixarAfd").addEventListener("click");
+
+
+    }
+}
+
+
+    function checkValidacao(e){
+        var checkbox = document.getElementById("aleatorio");
+        let batida1 = document.getElementById("batida1")
+        let batida2 = document.getElementById("batida2")
+        let batida3 = document.getElementById("batida3")
+        let batida4 = document.getElementById("batida4")
+
+      
+            if(checkbox.checked) {
+            batida1.type = "text";
+            batida2.type = "text";
+            batida3.type = "text";
+            batida4.type = "text";
+
+           /* batida1.value += Math.floor(Math.random() * (23 + 1) + 1);
+            batida1.value += Math.floor(Math.random() * (58 + 1) + 1);
+            batida2.value += Math.floor(Math.random() * (23 + 1) + 1);
+            batida2.value += Math.floor(Math.random() * (58 + 1) + 1);
+            batida3.value += Math.floor(Math.random() * (23 + 1) + 1);
+            batida3.value += Math.floor(Math.random() * (58 + 1) + 1);
+            batida4.value += Math.floor(Math.random() * (23 + 1) + 1);
+            batida4.value += Math.floor(Math.random() * (58 + 1) + 1);
+            while(batida1.value.length < 4){ 
+                batida1.value = "0" + batida1.value;
+                batida1.value.length++;
+            }
+            while(batida2.value.length < 4){
+                batida2.value = "0" + batida2.value;
+                batida2.value.length++;
+            }
+            while(batida3.value.length < 4){
+                batida3.value = "0" + batida3.value;
+                batida3.value.length++;
+            }
+            while(batida4.value.length < 4){
+                batida4.value = "0" + batida4.value;
+                batida4.value.length++;
+            }*/
+            batida1.disabled = true;
+            batida2.disabled = true;
+            batida3.disabled = true;
+            batida4.disabled = true;
+        }
+
+            else{
+            batida1.type = "time";
+            batida2.type = "time";
+            batida3.type = "time";
+            batida4.type = "time";
+            batida1.disabled = false;
+            batida2.disabled = false;
+            batida3.disabled = false;
+            batida4.disabled = false;
+            }
+            if(batida1.disabled){
+                batida1.style.backgroundColor = "rgb(207, 207, 207)";
+                batida2.style.backgroundColor = "rgb(207, 207, 207)";
+                batida3.style.backgroundColor = "rgb(207, 207, 207)";
+                batida4.style.backgroundColor = "rgb(207, 207, 207)";
+            }else{
+                batida1.style.backgroundColor = "rgb(255, 249, 249)";
+                batida2.style.backgroundColor = "rgb(255, 249, 249)";
+                batida3.style.backgroundColor = "rgb(255, 249, 249)";
+                batida4.style.backgroundColor = "rgb(255, 249, 249)";
+            }
+        }
+
+  </script>
+</body>
+<h1>Copyright ©2023 - Joarle Mafra - ALL RIGHTS RESERVED<h1/>
+</html>
+  </div>
+  <div id="tabs-6">
+    <p><!DOCTYPE html>
+<html>
+<head>
+    <title>Calculadora de Relógio de Ponto</title>
+</head>
+<body>
+    <h1>Calculadora de Relógio de Ponto</h1>
+    <form id="timeForm">
+        <label for="startTime">Hora de Início:</label>
+        <input type="time" id="startTime" name="startTime"><br><br>
+        <label for="lunchStart">Início do Almoço:</label>
+        <input type="time" id="lunchStart" name="lunchStart"><br><br>
+        <label for="lunchEnd">Término do Almoço:</label>
+        <input type="time" id="lunchEnd" name="lunchEnd"><br><br>
+        <label for="endTime">Hora de Término:</label>
+        <input type="time" id="endTime" name="endTime"><br><br>
+        <input type="submit" value="Calcular">
+    </form> 
+    <p id="result"></p>
+
+    <script>
+        document.getElementById("timeForm").addEventListener("submit", function(event){
+            event.preventDefault()
+            let startTime = document.getElementById("startTime").valueAsNumber
+            let endTime = document.getElementById("endTime").valueAsNumber
+            let lunchStart = document.getElementById("lunchStart").valueAsNumber
+            let lunchEnd = document.getElementById("lunchEnd").valueAsNumber
+            let result = endTime - startTime - (lunchEnd - lunchStart)
+            let hours = Math.floor(result / 3600000)
+            let minutes = Math.floor((result % 3600000) / 60000)
+            if (hours >= 0) {
+                document.getElementById("result").innerHTML = "Tempo total trabalhado: " + hours + " horas e " + minutes + " minutos."
+            } else {
+                document.getElementById("result").innerHTML = "Por favor, verifique se as horas inseridas estão corretas."
+            }
+        });
+    </script>
+</body>
+</html>
+
+<div id="resultado"></div>
+
+<script>
+  function formatarHora(input) {
+    const valor = input.value;
+    const padrao = /^([0-9]{0,2})([0-9]{0,2})$/;
+    const match = valor.match(padrao);
+
+    if (match) {
+      const hora = match[1] || "00";
+      const minuto = match[2] || "00";
+
+      input.value = `${hora.padStart(2, "0")}:${minuto.padStart(2, "0")}`;
+    } else {
+      input.value = "";
+    }
+  }
+
+  function calcularDiferencaDeTempo(entrada, intervalo, retornoIntervalo, fimExpediente) {
+    // Extrai as horas e minutos das strings de tempo
+    const entradaSplit = entrada.split(":");
+    const intervaloSplit = intervalo.split(":");
+    const retornoIntervaloSplit = retornoIntervalo.split(":");
+    const fimExpedienteSplit = fimExpediente.split(":");
+
+    // Converte as horas e minutos para números inteiros
+    const entradaHora = parseInt(entradaSplit[0], 10);
+    const entradaMinuto = parseInt(entradaSplit[1], 10);
+    const intervaloHora = parseInt(intervaloSplit[0], 10);
+    const intervaloMinuto = parseInt(intervaloSplit[1], 10);
+    const retornoHora = parseInt(retornoIntervaloSplit[0], 10);
+    const retornoMinuto = parseInt(retornoIntervaloSplit[1], 10);
+    const fimHora = parseInt(fimExpedienteSplit[0], 10);
+    const fimMinuto = parseInt(fimExpedienteSplit[1], 10);
+
+    // Calcula a diferença de tempo em minutos
+    const diferencaMinutos =
+      ((intervaloHora * 60 + intervaloMinuto) - (entradaHora * 60 + entradaMinuto)) +
+      ((fimHora * 60 + fimMinuto) - (retornoHora * 60 + retornoMinuto));
+
+    // Calcula a diferença de tempo em horas e minutos
+    const diferencaHora = Math.floor(diferencaMinutos / 60);
+    const diferencaMinutosRestantes = diferencaMinutos % 60;
+
+    // Formata a diferença de tempo como uma string "HH:MM"
+    const diferencaFormatada = `${diferencaHora.toString().padStart(2, "0")}:${diferencaMinutosRestantes
+      .toString()
+      .padStart(2, "0")}`;
+
+    return diferencaFormatada;
+  }
+function calcular() {
+  const entrada = document.getElementById("entrada").value;
+  const intervalo = document.getElementById("intervalo").value;
+  const retornoIntervalo = document.getElementById("retornoIntervalo").value;
+  const fimExpediente = document.getElementById("fimExpediente").value;
+
+  const horasEntrada = Number(entrada.split(":")[0]);
+  const minutosEntrada = Number(entrada.split(":")[1]);
+  const horasIntervalo = Number(intervalo.split(":")[0]);
+  const minutosIntervalo = Number(intervalo.split(":")[1]);
+  const horasRetornoIntervalo = Number(retornoIntervalo.split(":")[0]);
+  const minutosRetornoIntervalo = Number(retornoIntervalo.split(":")[1]);
+  const horasFimExpediente = Number(fimExpediente.split(":")[0]);
+  const minutosFimExpediente = Number(fimExpediente.split(":")[1]);
+
+  let totalHoras = 0;
+  let totalMinutos = 0;
+
+  if (horasEntrada > horasFimExpediente || (horasEntrada === horasFimExpediente && minutosEntrada > minutosFimExpediente)) {
+    totalHoras += 24 - horasEntrada + horasFimExpediente;
+    totalMinutos += minutosFimExpediente - minutosEntrada;
+  } else {
+    totalHoras += horasFimExpediente - horasEntrada;
+    totalMinutos += minutosFimExpediente - minutosEntrada;
+  }
+
+  if (horasIntervalo > horasRetornoIntervalo || (horasIntervalo === horasRetornoIntervalo && minutosIntervalo > minutosRetornoIntervalo)) {
+    totalHoras -= 24 - horasIntervalo + horasRetornoIntervalo;
+    totalMinutos -= minutosRetornoIntervalo - minutosIntervalo;
+  } else {
+    totalHoras -= horasRetornoIntervalo - horasIntervalo;
+    totalMinutos -= minutosRetornoIntervalo - minutosIntervalo;
+  }
+
+  if (totalMinutos < 0) {
+    totalMinutos += 60;
+    totalHoras--;
+  }
+
+  const totalFormatado = `${totalHoras.toString().padStart(2, "0")}:${totalMinutos.toString().padStart(2, "0")}`;
+
+  document.getElementById("resultado").innerText = totalFormatado;
+}
+
+function formatarHora(hora) {
+  if (hora.length === 4) {
+    return hora.slice(0, 2) + ":" + hora.slice(2);
+  } else {
+    return hora;
+  }
+}
+
+function atualizarCampo(event) {
+  const campo = event.target;
+  const valor = campo.value;
+  campo.value = formatarHora(valor);
+}
+
+document.getElementById("entrada").addEventListener("blur", atualizarCampo);
+document.getElementById("intervalo").addEventListener("blur", atualizarCampo);
+document.getElementById("retornoIntervalo").addEventListener("blur", atualizarCampo);
+document.getElementById("fimExpediente").addEventListener("blur", atualizarCampo);
+
+</script></p>
+
+  </div>
+  <div id="tabs-7">
+<h1>Copyright ©2023 - Erick Henrique- ALL RIGHTS RESERVED<h1/>
+    <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Pis</title>
+          <style>
+              
+              body{
+                  font: normal 20pt Arial;
+              }
+          </style>
+      </head>
+      <body>
+      
+          <input type="text" name="texto" id="texto" placeholder="Digite um PIS, CPF ou CNPJ" />
+          <button onclick="copiarTexto()">Copiar</button>
+          
+      <script>
+      function copiarTexto() {
+          var pis = document.getElementById("texto").value; 
+          pis = pis.replaceAll(".", "").replaceAll("-", "").replaceAll(":", "").replaceAll(" ", "").replaceAll("/", "");
+          navigator.clipboard.writeText(pis); 
+          alert("Texto copiado para a área de transferência!"); 
+      }
+      </script>
+      </body> 
+      </html><!DOCTYPE html>
+  </div>
+  <div id="tabs-8">
+    <p>Em construção...</p>
+  </div>
+  <div id="tabs-9">
+    <p>Em construção...</p>
+  </div>
+  <div id="tabs-10">
+
+    <html>
+  <head>
+  </head>
+  <body>
+    <h4>Exibir Versão do Navegador</h4>
+    <p id="browser-version"></p>
+
+    <script>
+      var userAgent = navigator.userAgent;
+      var browserName = getBrowserName(userAgent);
+      var browserVersion = getBrowserVersion(userAgent);
+
+      document.getElementById("browser-version").innerHTML = "Seu navegador é " + browserName + " " + browserVersion;
+
+      function getBrowserName(userAgent) {
+        var browsers = ["Chrome", "Firefox", "Safari", "Opera", "MSIE", "Trident", "Edge"];
+        for (var i = 0; i < browsers.length; i++) {
+          if (userAgent.indexOf(browsers[i]) !== -1) {
+            return browsers[i];
+          }
+        }
+        return "Desconhecido";
+      }
+
+      function getBrowserVersion(userAgent) {
+        var versionIndex = userAgent.indexOf("Version/");
+        if (versionIndex === -1) {
+          versionIndex = userAgent.indexOf(browserName) + browserName.length + 1;
+        } else {
+          versionIndex += 8;
+        }
+        var versionString = userAgent.substring(versionIndex);
+        var versionParts = versionString.split(/[^\d\.]/);
+        return versionParts[0];
+      }
+    </script>
+  </body>
+</html>
+<html>
+  <head>
+    <title>Obter o número do IP</title>
+ <script>
+  function getIP() {
+    fetch("https://api.ipify.org?format=json")
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("ip").textContent = data.ip;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  window.onload = function() {
+    document.getElementById("ip").innerHTML = "Seu número de IP é: " + returnCitySN["cip"];
+  }
+</script>
+</head>
+<body onload="getIP()">
+  <h4 id="ip-address">Carregando endereço IP...</h4>
+  <p id="ip"></p>
+</body>
+</html>
+    </div>
+  </div>
+
+  <script>
+    $(function() {
+      $("#tabs").tabs();
+    });
+  </script>
+</body>
+</html>
+
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+  $(function() {
+    $("#tabs").tabs();
+  });
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Seu Site</title>
+  <style>
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #modal {
+      background-color: #fff;
+      padding: 20px;
+      max-width: 600px;
+      text-align: center;
+      color: navy; /* Adicionado */
+    }
+
+    #modal h2 {
+      font-size: 24px;
+    }
+
+    #modal p {
+      margin-bottom: 20px;
+    }
+
+    #acceptButton {
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div id="modal">
+      <h2>Termo de Responsabilidade</h2>
+      <p>Este Termo de Responsabilidade estabelece as condições para o uso do site "deleanmafra--lucky-guardiang.repl.co", que oferece a geração de dados fictícios para fins de teste e simulação. Ao utilizar este site, o usuário concorda em cumprir as seguintes condições:
+
+1)Uso Adequado: O usuário reconhece que os dados fictícios gerados pelo site são exclusivamente para fins de teste e simulação. O usuário concorda em utilizar essas informações de forma ética, legal e responsável.
+
+2)Responsabilidade do Usuário: O usuário é totalmente responsável pelo uso das informações geradas pelo site. O site e seus proprietários não se responsabilizam pelo uso indevido, ilegal ou inadequado dessas informações.
+
+3)Uso Legal: O usuário concorda em utilizar as informações geradas pelo site de acordo com as leis e regulamentações aplicáveis em sua jurisdição. É responsabilidade do usuário garantir que o uso das informações esteja em conformidade com a legislação vigente.
+
+4)Privacidade: O site não armazena ou registra as informações geradas pelos usuários. No entanto, é recomendado que o usuário não gere dados pessoais reais ou sensíveis durante o uso do site, a fim de preservar a privacidade e a segurança.
+
+5)Isenção de Responsabilidade: O site e seus proprietários não garantem a precisão, atualidade ou integridade das informações geradas. Todas as informações são fornecidas "no estado em que se encontram", sem garantias de qualquer tipo.
+
+6)Danos e Prejuízos: O usuário concorda em isentar o site e seus proprietários de qualquer responsabilidade por danos ou prejuízos decorrentes do uso das informações geradas pelo site.
+
+7)Alterações no Termo de Responsabilidade: O site se reserva o direito de modificar este Termo de Responsabilidade a qualquer momento, sem aviso prévio. É responsabilidade do usuário revisar periodicamente este termo para estar ciente de quaisquer alterações.
+
+Ao utilizar o site "coarsenormalgreenware.delean-mafra-sd.repl.co", o usuário reconhece ter lido, entendido e concordado com este Termo de Responsabilidade, assumindo total responsabilidade pelo uso das informações geradas pelo site.</p>
+      <button id="acceptButton" onclick="myfunction()">Aceitar</button>
+    </div>
+  </div>
+
+  <!-- Restante do conteúdo do seu site -->
+
+  <script>
+    const myfunction = () => {
+      const overlay = document.getElementById('overlay');
+      const acceptButton = document.getElementById('acceptButton');
+
+      acceptButton.addEventListener('click', function() {
+        overlay.style.display = 'none';
+      });
+
+      overlay.style.display = 'flex';
+    };
+  </script>
+</body>
+</html>
