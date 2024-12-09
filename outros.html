@@ -1541,32 +1541,34 @@ document.getElementById("fimExpediente").addEventListener("blur", atualizarCampo
         <div id="result"></div>
         <div id="date-time"></div>
     </div>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
-    <script type="text/python">
-from browser import document, html
-from random import sample
-from datetime import datetime
-
-def sortear_nome(event):
-    name_list = document['name-list'].value.strip().split('\n')
-    quantity = int(document['quantity'].value)
-    
-    if name_list and quantity > 0:
-        sorted_names = sample(name_list, min(len(name_list), quantity))
-        document['result'].text = 'Nomes sorteados: ' + ', '.join(sorted_names)
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        document['date-time'].text = f'Sorteio realizado em: {current_time}'
-    else:
-        document['result'].text = 'Por favor, insira ao menos um nome e uma quantidade válida.'
-        document['date-time'].text = ''
-
-document['sort-button'].bind('click', sortear_nome)
-    </script>
     <script>
-        window.onload = function() {
-            brython();
+        function sortearNome() {
+            const nameList = document.getElementById('name-list').value.trim().split('\n');
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const resultDiv = document.getElementById('result');
+            const dateTimeDiv = document.getElementById('date-time');
+            
+            if (nameList.length > 0 && quantity > 0) {
+                const sortedNames = [];
+                const nameListCopy = [...nameList];
+
+                for (let i = 0; i < Math.min(nameList.length, quantity); i++) {
+                    const randomIndex = Math.floor(Math.random() * nameListCopy.length);
+                    sortedNames.push(nameListCopy.splice(randomIndex, 1)[0]);
+                }
+
+                resultDiv.textContent = 'Nomes sorteados: ' + sortedNames.join(', ');
+                
+                const now = new Date();
+                const formattedDateTime = now.toISOString().replace('T', ' ').substring(0, 19);
+                dateTimeDiv.textContent = 'Sorteio realizado em: ' + formattedDateTime;
+            } else {
+                resultDiv.textContent = 'Por favor, insira ao menos um nome e uma quantidade válida.';
+                dateTimeDiv.textContent = '';
+            }
         }
+
+        document.getElementById('sort-button').addEventListener('click', sortearNome);
     </script>
 </body>
 </html>
