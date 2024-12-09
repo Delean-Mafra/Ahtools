@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <p>Copyright ©2024 | Delean Mafra, todos os direitos reservados.</p>
+    <link rel="icon" href="favicon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Favicon com a imagem externa -->
-    <link rel="icon" href="./images.png" type="image/png">
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
@@ -23,7 +20,6 @@
             color: #e0e0e0;
         }
 
-        /* Estilos das abas */
         .tab {
             display: none;
         }
@@ -58,7 +54,10 @@
             border: none;
         }
 
-        /* Ocultar conteúdo do iframe da aba 9 como alternativa */
+        p {
+            text-align: center;
+        }
+
         .blocked-content::after {
             content: "Conteúdo não disponível.";
             display: flex;
@@ -74,7 +73,10 @@
         }
     </style>
 </head>
+
 <body>
+    <p>Copyright ©2024 | Delean Mafra, todos os direitos reservados.</p>
+
     <!-- Botões das abas -->
     <div class="tab-buttons">
         <div class="tab-button" onclick="openTab('tab1')">Valida AFD</div>
@@ -86,7 +88,7 @@
         <div class="tab-button" onclick="openTab('tab7')">CSV vs JSON</div>
         <div class="tab-button" onclick="openTab('tab8')">Valida planilha PIS</div>
         <div class="tab-button" onclick="openTab('tab9')">Calc</div>
-        <div class="tab-button" onclick="openTab('tab10')">outros</div>        
+        <div class="tab-button" onclick="openTab('tab10')">Outros</div>
     </div>
 
     <!-- Conteúdo das abas -->
@@ -106,7 +108,6 @@
         <iframe src="Calculadora_Relogio_de_Ponto.html"></iframe>
     </div>
     <div id="tab6" class="tab">
-        <!-- Instruções para abrir uma página externa -->
         <p><strong>Instruções para acessar o conteúdo de IA CLT:</strong></p>
         <p>Ao clicar no botão "IA CLT", você será redirecionado para uma página externa.</p>
     </div>
@@ -116,55 +117,42 @@
     <div id="tab8" class="tab">
         <iframe src="valida_pis.html"></iframe>
     </div>
-    <div id="tab10" class="tab">
-        <iframe src="outros.html"></iframe>
-    </div>
     <div id="tab9" class="tab">
         <iframe id="iframe-tab9" src="https://sonodaponto.com.br/app/calculadoradehoras/" class="blocked-content"></iframe>
     </div>
+    <div id="tab10" class="tab">
+        <iframe src="outros.html"></iframe>
+    </div>
 
     <script>
-        // Função para abrir a aba
         function openTab(tabId) {
             const tabs = document.querySelectorAll('.tab');
             const buttons = document.querySelectorAll('.tab-button');
 
-            // Tratamento especial para a aba "IA CLT" (tab6)
             if (tabId === 'tab6') {
                 window.open("https://hf.co/chat/assistant/6675c8db66137c408a16fcaa", "_blank");
                 return;
             }
 
-            // Esconde todas as abas
             tabs.forEach(tab => tab.style.display = 'none');
-
-            // Remove a classe "active-tab" de todos os botões
             buttons.forEach(button => button.classList.remove('active-tab'));
 
-            // Exibe a aba clicada
             const activeTab = document.getElementById(tabId);
             if (activeTab) activeTab.style.display = 'block';
 
-            // Adiciona a classe "active-tab" no botão correspondente
-            const activeButton = Array.from(buttons).find(button => button.textContent.includes(tabId.replace('tab', '')));
+            const activeButton = Array.from(buttons).find(button => button.textContent.trim() === tabId.replace('tab', ''));
             if (activeButton) activeButton.classList.add('active-tab');
 
-            // Executa a lógica de remoção específica para a aba 9
             if (tabId === "tab9") {
                 blockContentInTab9();
             }
         }
 
-        // Função para bloquear conteúdo específico no iframe da tab9
         function blockContentInTab9() {
             const iframe = document.querySelector("#iframe-tab9");
-
-            // Aguarda o carregamento do iframe
             iframe.addEventListener("load", () => {
                 try {
                     const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-
-                    // Remove a imagem ou link específico
                     const unwantedImage = iframeDocument.querySelector('img[src="img/gruposonoda.png"]');
                     const unwantedLink = iframeDocument.querySelector('a[href="http://www.sonodaponto.com.br"]');
 
@@ -176,11 +164,13 @@
             });
         }
 
-        // Abre a primeira aba por padrão ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
             openTab('tab1');
+            const firstButton = document.querySelector('.tab-button');
+            if (firstButton) firstButton.classList.add('active-tab');
         });
     </script>
+
     <script type="text/python">
 from browser import document, window
 
@@ -190,32 +180,8 @@ def disable_right_click(event):
 document.bind('contextmenu', disable_right_click)
 
 def disable_keys(event):
-    
-    if event.keyCode == 123:
-        event.preventDefault()
-    
-    if event.ctrlKey and event.shiftKey and event.keyCode == 73:
-        event.preventDefault()
-    
-    if event.ctrlKey and event.shiftKey and event.keyCode == 67:
-        event.preventDefault()
-    
-    if event.ctrlKey and event.shiftKey and event.keyCode == 74:
-        event.preventDefault()
-    
-    if event.ctrlKey and event.keyCode == 85:
-        event.preventDefault()
-   
-    if (event.ctrlKey or event.metaKey) and event.keyCode == 83:
-        event.preventDefault()
-    
-    if (event.ctrlKey or event.metaKey) and event.keyCode == 75:
-        event.preventDefault()
-    
-    if (event.ctrlKey or event.metaKey) and event.keyCode == 69:
-        event.preventDefault()
-    
-    if (event.ctrlKey or event.metaKey) and event.keyCode == 76:
+    if event.keyCode in [123, 73, 67, 74, 85]:
+        print(f"Blocked key with code: {event.keyCode}")
         event.preventDefault()
 
 window.bind('keydown', disable_keys)
@@ -224,6 +190,6 @@ def disable_drag(event):
     event.preventDefault()
 
 document.bind('dragstart', disable_drag)
-</script>
+    </script>
 </body>
 </html>
