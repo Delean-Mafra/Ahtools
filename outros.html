@@ -1488,92 +1488,90 @@ document.getElementById("fimExpediente").addEventListener("blur", atualizarCampo
       </body> 
       </html><!DOCTYPE html>
   </div>
-  <div id="tabs-8">
-    <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Sorteador de Nomes</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        #container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        #name-list {
-            width: 300px;
-            height: 150px;
-        }
-        #result, #date-time {
-            font-size: 1.5em;
-            margin-top: 20px;
-        }
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 1em;
-        }
-        input[type="number"] {
-            margin-top: 10px;
-            padding: 5px;
-            font-size: 1em;
-            width: 80px;
-        }
-    </style>
-</head>
-<body>
-    <div id="container">
-        <h1>Sorteador de Nomes</h1>
-        <textarea id="name-list" placeholder="Insira os nomes aqui, um por linha..."></textarea>
-        <input type="number" id="quantity" min="1" placeholder="Quantidade">
-        <button id="sort-button">Sortear Nome</button>
-        <div id="result"></div>
-        <div id="date-time"></div>
-    </div>
-    <script>
-        function sortearNome() {
-            const nameList = document.getElementById('name-list').value.trim().split('\n');
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const resultDiv = document.getElementById('result');
-            const dateTimeDiv = document.getElementById('date-time');
-            
-            if (nameList.length > 0 && quantity > 0) {
-                const sortedNames = [];
-                const nameListCopy = [...nameList];
-
-                for (let i = 0; i < Math.min(nameList.length, quantity); i++) {
-                    const randomIndex = Math.floor(Math.random() * nameListCopy.length);
-                    sortedNames.push(nameListCopy.splice(randomIndex, 1)[0]);
-                }
-
-                resultDiv.textContent = 'Nomes sorteados: ' + sortedNames.join(', ');
-                
-                const now = new Date();
-                const formattedDateTime = now.toISOString().replace('T', ' ').substring(0, 19);
-                dateTimeDiv.textContent = 'Sorteio realizado em: ' + formattedDateTime;
-            } else {
-                resultDiv.textContent = 'Por favor, insira ao menos um nome e uma quantidade válida.';
-                dateTimeDiv.textContent = '';
+<div id="tabs-8">
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Sorteador de Nomes</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f0f0f0;
             }
-        }
+            #container-8 {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            }
+            #name-list-8 {
+                width: 300px;
+                height: 150px;
+            }
+            #result-8, #date-time-8 {
+                font-size: 1.5em;
+                margin-top: 20px;
+            }
+            button {
+                margin-top: 10px;
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+            input[type="number"] {
+                margin-top: 10px;
+                padding: 5px;
+                font-size: 1em;
+                width: 80px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container-8">
+            <h1>Sorteador de Nomes</h1>
+            <textarea id="name-list-8" placeholder="Insira os nomes aqui, um por linha..."></textarea>
+            <input type="number" id="quantity-8" min="1" placeholder="Quantidade">
+            <button id="sort-button-8">Sortear Nome</button>
+            <div id="result-8"></div>
+            <div id="date-time-8"></div>
+        </div>
+        <script>
+            function sortearNome() {
+                const nameList = document.getElementById('name-list-8').value.trim().split('\n');
+                const quantity = parseInt(document.getElementById('quantity-8').value);
+                const resultDiv = document.getElementById('result-8');
+                const dateTimeDiv = document.getElementById('date-time-8');
 
-        document.getElementById('sort-button').addEventListener('click', sortearNome);
-    </script>
-</body>
-</html>
+                if (nameList.length > 0 && quantity > 0) {
+                    const sortedNames = [];
+                    const nameListCopy = [...nameList];
 
-  </div>
+                    for (let i = 0; i < Math.min(nameList.length, quantity); i++) {
+                        const randomIndex = Math.floor(Math.random() * nameListCopy.length);
+                        sortedNames.push(nameListCopy.splice(randomIndex, 1)[0]);
+                    }
+
+                    resultDiv.textContent = 'Nomes sorteados: ' + sortedNames.join(', ');
+
+                    const now = new Date();
+                    const formattedDateTime = now.toISOString().replace('T', ' ').substring(0, 19);
+                    dateTimeDiv.textContent = 'Sorteio realizado em: ' + formattedDateTime;
+                } else {
+                    resultDiv.textContent = 'Por favor, insira ao menos um nome e uma quantidade válida.';
+                    dateTimeDiv.textContent = '';
+                }
+            }
+
+            document.getElementById('sort-button-8').addEventListener('click', sortearNome);
+        </script>
+    </body>
+    </html>
+</div>
   <div id="tabs-9">
     <p>Em construção...</p>
   </div>
