@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de CPF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+            display: block;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .output {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Validador de CPF</h1>
+        <input type="file" id="fileInput" accept=".csv">
+        <button onclick="processFile()">Validar CPF</button>
+        <div class="output" id="output"></div>
+    </div>
+
+    <script>
+        function validaCPF(cpf) {
+            // Remove caracteres não numéricos
+            cpf = cpf.replace(/\D/g, '');
+
+            // Verifica se o CPF é uma sequência de números iguais (ex: 00000000000, 11111111111, etc.)
+            const cpfsInvalidos = [
+                '00000000000', '11111111111', '22222222222', '33333333333',
+                '44444444444', '55555555555', '66666666666', '77777777777',
+                '88888888888', '99999999999'
+            ];
+            if (cpfsInvalidos.includes(cpf)) return false;
+
+            // Verifica se o CPF tem 11 dígitos
+            if (cpf.length !== 11) return false;
+
+            // Cálculo do primeiro dígito verificador
+            let soma = 0;
+            let peso = 10;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(cpf[i]) * peso;
+                peso--;
+            }
+            let primeiroDigito = 11 - (soma % 11);
+            if (primeiroDigito >= 10) primeiroDigito = 0;
+
+            // Cálculo do segundo dígito verificador
+            soma = 0;
+            peso = 11;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(cpf[i]) * peso;
+                peso--;
+            }
+            let segundoDigito = 11 - (soma % 11);
+            if (segundoDigito >= 10) segundoDigito = 0;
+
+            // Verifica se os dois dígitos verificadores são iguais aos fornecidos no CPF
+            return cpf[9] == primeiroDigito && cpf[10] == segundoDigito;
+        }
+
+        function processFile() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('Por favor, selecione um arquivo CSV.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const csvContent = e.target.result;
+                const rows = csvContent.split('\n').map(row => row.split(';'));
+                let header = rows.shift();
+
+                // Identifica a coluna CPF independentemente do caso
+                const cpfIndex = header.findIndex(
+                    col => col.trim().toLowerCase() === 'cpf'
+                );
+
+                if (cpfIndex === -1) {
+                    alert('A planilha deve conter uma coluna "CPF" ou "cpf".');
+                    return;
+                }
+
+                // Adiciona a coluna "Validação" no cabeçalho
+                header = header.concat('Validação');
+                const resultRows = [header];
+
+                // Processa as linhas
+                rows.forEach(row => {
+                    if (row[cpfIndex]) {
+                        const isValid = validaCPF(row[cpfIndex]);
+                        resultRows.push(row.concat(isValid ? 'Válido' : 'Inválido'));
+                    }
+                });
+
+                downloadCSV(resultRows);
+            };
+
+            reader.readAsText(file);
+        }
+
+        function downloadCSV(rows) {
+            const csvContent = rows.map(row => row.join(';')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'resultado_cpf.csv');
+            link.style.display = 'none';
+            document.body.appendChild(link);
+
+            link.click();
+            document.body.removeChild(link);
+
+            alert('O arquivo processado foi gerado e baixado com sucesso!');
+        }
+    </script>
+</body>
+</html>
