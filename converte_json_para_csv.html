@@ -63,29 +63,12 @@
 <script type="text/python">
 from browser import document, window, alert
 import json
-import csv
 
-# Dicionário de mapeamento das colunas do JSON para os campos do CSV
+# Mapeamento de campos para CSV (se necessário)
 mapa_campos_csv = {
-    "dataAdmissao": "Data de Admissão",
-    "matricula": "matricula",
     "nome": "nome",
-    "bate_ponto": "Bate Ponto",
-    "dataNascimento": "Data de Nascimento",
-    "ctps": "Carteira de trabalho",
-    "pis": "pis",
-    "regimeTrabalho": "Regime de Trabalho",
-    "cargo": "cargo",
-    "cnpj": "CNPJ",
-    "dataCnpj": "Data para competencia do CNPJ",
-    "codBarras": "Código de Barras",
-    "codInterno": "Código Interno",
-    "cpf": "cpf",
-    "dataDemissao": "Data de Desligamento",
-    "departamento": "departamento",
-    "carga_horaria": "Carga horaria",
-    "email": "email",
-    "email_chefia": "email_chefia",
+    "matricula": "matricula",
+    "cpf": "CPF"
 }
 
 def processar_arquivo(evt):
@@ -101,26 +84,24 @@ def processar_conteudo(conteudo):
         alert("O arquivo JSON está vazio ou inválido!")
         return
     
-    # Obter os cabeçalhos CSV a partir das chaves do primeiro item do JSON
-    cabecalho = [mapa_campos_csv.get(campo, campo) for campo in dados_json[0].keys()]
-    
-    # Criar o conteúdo CSV
-    csv_data = []
-    csv_data.append(cabecalho)
+    # Criar o CSV
+    cabecalho = list(mapa_campos_csv.values())
+    csv_linhas = [",".join(cabecalho)]  # Adicionar o cabeçalho ao CSV
     
     for item in dados_json:
         linha = []
-        for campo_json in item.keys():
-            campo_csv = mapa_campos_csv.get(campo_json, campo_json)
-            linha.append(item[campo_json])
-        csv_data.append(linha)
+        for chave in mapa_campos_csv.keys():
+            valor = item.get(chave, "")
+            linha.append(valor)
+        csv_linhas.append(",".join(linha))  # Adicionar a linha formatada ao CSV
     
+    csv_data = "\n".join(csv_linhas)  # Transformar em string final
     criar_link_download(csv_data)
 
 def criar_link_download(csv_data):
-    # Criar o CSV a partir dos dados
-    output = window.Blob.new([window.JSON.stringify(csv_data)], {'type': 'text/csv'})
-    url = window.URL.createObjectURL(output)
+    # Criar o arquivo CSV para download
+    blob = window.Blob.new([csv_data], {'type': 'text/csv'})
+    url = window.URL.createObjectURL(blob)
     
     link = document.createElement('a')
     link.href = url
