@@ -1,274 +1,166 @@
 <!DOCTYPE html>
-<html>
-<body>
-  <img src="https://www.ahgora.com/_next/static/media/empty-icon.66accb21.svg" alt="Logo Ahgora">
-</body>
-</html>
-<html>
-<script>  
-function limparPontuacao() {
-  let input = document.getElementById("validarCpfPisInput");
-  input.value = input.value.replace(/\.|-/g, "");
-} 
-</script>
+<html lang="pt-br">
 <head>
-</head>
-<body>
-<h1 class="container"><strong>Gerador e validador de CPF e PIS</strong></h1>
-<div class="container"><br />
-<label for="pis">Digite o n&uacute;mero do PIS:</label>&nbsp;<input id="pis" type="text" /><button onclick="validarPIS()">Validar PIS</button><br />
-<label for="gerarCpfQuantidade">Quantidade de CPF/PIS:</label><span style="background-color: rgb(11, 30, 43);">&nbsp;</span><input id="gerarCpfQuantidade" max="10" min="1" name="gerarCpfQuantidade" type="number" value="1" /><br />
-<br />
-<button onclick="gerarCpf()" type="button">Gerar CPF/PIS</button><button onclick="validarCpfPis()" type="button">Validar CPF</button><span style="background-color: rgb(11, 30, 43);">&nbsp;</span><input id="validarCpfPisInput" name="validarCpfPisInput" type="text" spellcheck="false" data-ms-editor="true" onblur="limparPontuacao()">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador e Validador de CPF e PIS</title>
 
-
-
-
-<div class="resultado" id="resultado">&nbsp;</div>
-</div>
-<script>
-		function gerarCpf() {
-			const quantidade = document.getElementById("gerarCpfQuantidade").value;
-			let resultado = "";
-			
-			for (let i = 0; i < quantidade; i++) {
-				// Gerar CPF
-				const cpf = gerarCPF();
-				resultado += `CPF: ${cpf}<br>`;			
-				// Gerar PIS
-				const pis = gerarPIS();
-				resultado += `PIS: ${pis}<br><br>`;
-			}
-			document.getElementById("resultado").innerHTML = resultado;
-		}
-		function gerarCPF() {
-    const cpfSemDigitos = gerarCPFBase();
-    const primeiroDigito = calcularDigitoCPF(cpfSemDigitos);
-    const segundoDigito = calcularDigitoCPF(cpfSemDigitos + primeiroDigito);
-    return `${cpfSemDigitos}${primeiroDigito}${segundoDigito}`;
-}
-function gerarCPFBase() {
-    let cpfSemDigitos = "";
-    for (let i = 0; i < 9; i++) {
-        cpfSemDigitos += Math.floor(Math.random() * 10);
-    }
-    return cpfSemDigitos;
-}
-function calcularDigitoCPF(cpf) {
-    let soma = 0;
-    for (let i = 0; i < cpf.length; i++) {
-        soma += parseInt(cpf.charAt(i)) * (cpf.length + 1 - i);
-    }
-    const resto = soma % 11;
-    return resto < 2 ? 0 : 11 - resto;
-}
-function validateCpf(cpf) {
-  // Remove all punctuation marks from the CPF code.
-  cpf = cpf.replace(/\D/g, "");
-    if (cpf === '') return false;
-    // Elimina CPFs invalidos conhecidos
-    if (cpf.length !== 11 || cpf === "00000000000" || cpf === "11111111111" || cpf === "22222222222" || cpf === "33333333333" || cpf === "44444444444" || cpf === "55555555555" || cpf === "66666666666" || cpf === "77777777777" || cpf === "88888888888" || cpf === "99999999999") {
-        return false;
-    }
-    // Valida 1o digito
-    let soma = 0;
-    for (let i = 0; i < 9; i++) {
-        soma += parseInt(cpf.charAt(i)) * (10 - i);
-    }
-    let resto = 11 - (soma % 11);
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf.charAt(9))) return false;
-    // Valida 2o digito
-    soma = 0;
-    for (let i = 0; i < 10; i++) {
-        soma += parseInt(cpf.charAt(i)) * (11 - i);
-    }
-    resto = 11 - (soma % 11);
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf.charAt(10))) return false;
-    return true;
-}
-function gerarPIS() {
-    const pisSemDigitos = gerarPISBase();
-    const digito = calcularDigitoPIS(pisSemDigitos);
-    return `${pisSemDigitos}-${digito}`;
-}
-function gerarPISBase() {
-    let pisSemDigitos = "";
-    for (let i = 0; i < 10; i++) {
-        pisSemDigitos += Math.floor(Math.random() * 10);
-    }
-    return pisSemDigitos;
-}
-function calcularDigitoPIS(pis) {
-    const multiplicadores = [3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-    let soma = 0;
-    for (let i = 0; i < pis.length; i++) {
-        soma += parseInt(pis.charAt(i)) * multiplicadores[i];
-    }
-   const resto = soma % 11;
-const digito = 11 - resto;
-return digito > 9 ? 0 : digito;
-}
-function validarCPF(cpf) {
-  if (cpf.length !== 11) {
-    return false;
-  }
-  const cpfSemDigitos = cpf.slice(0, -2);
-  const primeiroDigito = calcularDigitoCPF(cpfSemDigitos);
-  const segundoDigito = calcularDigitoCPF(cpfSemDigitos + primeiroDigito);
-  return cpf.slice(-2) === `${primeiroDigito}${segundoDigito}`;
-}
-function validarPIS(pis) {
-  if (pis.length !== 11) {
-    return false;
-  }
-  const pisSemDigitos = pis.slice(0, -1);
-  const digito = calcularDigitoPIS(pisSemDigitos);
-  return pis.slice(-1) === `${digito}`;
-}
-function validarCpfPis() {
-  const cpfPis = document.getElementById("validarCpfPisInput").value;
-  if (validarCPF(cpfPis)) {
-    alert("CPF é válido!");
-  } else {
-    alert("CPF é inválido!");
-  }
-}
-</script></body>
-</html>
-<title></title>
-<br />
-<br />
-<br />
-<br />
-<p style="color: black; font-weight: bold; text-align: center;">
-    Copyright &copy;2024 - Delean Mafra -&nbsp;todos os direitos reservados
-</p>
-
-<script>
-		function validarPIS() {
-			const pis = document.getElementById("pis").value.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
-
-			if (pis.length !== 11 || pis.match(/^(.)\1+$/)) { // Verifica se o PIS tem 11 dígitos e não é uma sequência repetida
-				mostrarMensagem("PIS inválido");
-				return;
-			}
-function limparPontuacao() {
-  const input = document.getElementById("validarCpfPisInput");
-  const cpf = input.value.replace(/\D/g, "");
-  input.value = cpf;
-}
-
-			let soma = 0;
-			let peso = 3;
-
-			for (let i = 0; i < 10; i++) {
-				soma += pis.charAt(i) * peso;
-				peso--;
-				if (peso < 2) peso = 9;
-			}
-			const digitoVerificador = 11 - (soma % 11);
-			if (digitoVerificador === 10 || digitoVerificador === 11) { // Se o dígito verificador calculado for 10 ou 11, o dígito verificador válido é 0
-				if (pis.charAt(10) == 0) {
-					mostrarMensagem("PIS válido");
-				} else {
-					mostrarMensagem("PIS inválido");
-				}
-			} else { // Caso contrário, o dígito verificador válido é igual ao dígito calculado
-				if (pis.charAt(10) == digitoVerificador) {
-					mostrarMensagem("PIS válido");
-				} else {
-					mostrarMensagem("PIS inválido");
-				}
-			}
-		}
-		function mostrarMensagem(mensagem) {
-			alert(mensagem);
-		}
-	</script>
-<style type="text/css">body {
-			background-color: #0a3d62;
-			color: #fff;
-			font-family: Arial, sans-serif;
-		}
-		.container {
-			width: 80%;
-			margin: 0 auto;
-			padding: 20px;
-			background-color: #0b1e2b;
-			border-radius: 10px;
-			box-shadow: 0px 0px 20px rgba(0,0,0,0.6);
-		}
-		h1, h2, label {
-			font-weight: bold;
-			margin-bottom: 10px;
-		}
-		input[type=number] {
-			padding: 5px;
-			border-radius: 5px;
-			border: none;
-			background-color: #f1f1f1;
-			margin-bottom: 10px;
-		}
-		button {
-			padding: 10px;
-			border-radius: 5px;
-			border: none;
-			background-color: #2ecc71;
-			color: #fff;
-			font-weight: bold;
-			cursor: pointer;
-			margin-bottom: 20px;
-		}
-		.resultado {
-			padding: 20px;
-			background-color: #16a085;
-			border-radius: 5px;
-			box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-		}
-</style>
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-  /* Estilo para a aba ativa */
-  ::-webkit-scrollbar-thumb {
-    background-color: purple;
-  }
-  /* Estilo para as abas inativas */
-  ::-webkit-scrollbar-track {
-    background-color: purple;
-  }
-</style>
-  <title>Abas</title>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
- <style>
-    #tabs {
-      width: 1600px;
-      height: 800px;
+
+  <style>
+    /* Estilo para o corpo */
+    body {
+      background-color: #0a3d62;
+      color: #fff;
+      font-family: Arial, sans-serif;
     }
-    .ui-widget-header {
+
+    /* Estilo do container */
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #0b1e2b;
+      border-radius: 10px;
+      box-shadow: 0px 0px 20px rgba(0,0,0,0.6);
+    }
+
+    /* Título */
+    h1, h2, label {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    /* Estilo dos campos de input */
+    input[type="number"], input[type="text"] {
+      padding: 5px;
+      border-radius: 5px;
+      border: none;
+      background-color: #f1f1f1;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    /* Botões */
+    button {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #2ecc71;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    /* Resultado */
+    .resultado {
+      padding: 20px;
+      background-color: #16a085;
+      border-radius: 5px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+    }
+
+    /* Estilo para as abas */
+    #tabs {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      height: auto;
+    }
+
+    /* Estilo para a navegação das abas */
+    .ui-tabs-nav {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .ui-tabs-nav li {
+      margin: 5px;
+    }
+
+    .ui-tabs-nav li a {
+      display: block;
+      padding: 10px 20px;
       background-color: #b9cd6d;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px 5px 0 0;
+      font-weight: bold;
+    }
+
+    /* Estilo para a aba ativa */
+    .ui-tabs-nav li.ui-state-active a {
+      background-color: #4CAF50; /* Cor verde mais escura para a aba ativa */
+    }
+
+    /* Estilo do conteúdo da aba */
+    .ui-tabs-panel {
+      background-color: #f4f4f4;
+      padding: 20px;
+      border-radius: 0 0 5px 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Responsividade para telas pequenas */
+    @media screen and (max-width: 768px) {
+      #tabs {
+        padding: 10px;
+      }
+
+      .ui-tabs-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .ui-tabs-nav li {
+        margin: 5px;
+      }
+
+      .ui-tabs-nav li a {
+        font-size: 14px;
+        padding: 8px 15px;
+      }
     }
   </style>
 </head>
-<body>  
-<div id="tabs">
-  <ul>
-    <li><a href="#tabs-1">Gerador de Datas</a></li>
-    <li><a href="#tabs-2">Gerador de nomes</a></li>
-    <li><a href="#tabs-3">CNPJ</a></li>
-    <li><a href="#tabs-4">Matricula</a></li>
-    <li><a href="#tabs-5">Gerador de AFD fictício</a></li>
-    <li><a href="#tabs-6">Calculadora de jornada</a></li>
-    <li><a href="#tabs-7">Removedor de pontos</a></li>
-    <li><a href="#tabs-8">Sorteador</a></li>
-    <li><a href="#tabs-9">Calc HE</a></li>
-    <li><a href="#tabs-10">Informações adicionais</a></li>
-  </ul>
+<body>
+
+  <div class="container">
+    <h1><strong>Gerador e validador de CPF e PIS</strong></h1>
+
+    <label for="pis">Digite o número do PIS:</label>
+    <input id="pis" type="text" />
+    <button onclick="validarPIS()">Validar PIS</button><br />
+
+    <label for="gerarCpfQuantidade">Quantidade de CPF/PIS:</label>
+    <input id="gerarCpfQuantidade" type="number" value="1" max="10" min="1" /><br /><br />
+
+    <button onclick="gerarCpf()">Gerar CPF/PIS</button>
+    <button onclick="validarCpfPis()">Validar CPF</button>
+    <input id="validarCpfPisInput" type="text" onblur="limparPontuacao()" spellcheck="false">
+
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+  <div id="tabs">
+    <ul>
+      <li><a href="#tabs-1">Datas</a></li>
+      <li><a href="#tabs-2">Nomes</a></li>
+      <li><a href="#tabs-3">CNPJ</a></li>
+      <li><a href="#tabs-4">Matric</a></li>
+      <li><a href="#tabs-5">AFD fictício</a></li>
+      <li><a href="#tabs-6">Calc. jornada</a></li>
+      <li><a href="#tabs-7">Removedor de pontos</a></li>
+      <li><a href="#tabs-8">Sorteador</a></li>
+      <li><a href="#tabs-9">Calc HE</a></li>
+      <li><a href="#tabs-10">Informações</a></li>
+    </ul>
   <div id="tabs-1">
     <head>
   <title>Gerador de Datas</title>
@@ -276,21 +168,8 @@ function limparPontuacao() {
 <body>
   <button onclick="gerarData()">Gerar Data</button>
   <p id="dataGerada"></p>
-  <script>
-    function gerarData() {
-      var data = new Date();
-      var anoAtual = data.getFullYear();
-      var anoAleatorio = Math.floor(Math.random() * (anoAtual - 1950) + 1950); // Gera um ano entre 1950 e o ano atual
+<script src="script3.js"></script>
 
-      while (anoAleatorio === 2023) {
-        anoAleatorio = Math.floor(Math.random() * (anoAtual - 1950) + 1950);
-      }
-      var mesAleatorio = Math.floor(Math.random() * 12) + 1; // Gera um número de 1 a 12 para representar o mês
-      var diaAleatorio = Math.floor(Math.random() * 31) + 1; // Gera um número de 1 a 31 para representar o dia
-      var dataGerada = new Date(anoAleatorio, mesAleatorio - 1, diaAleatorio);
-      document.getElementById("dataGerada").textContent = dataGerada.toLocaleDateString();
-    }
-  </script>
 </body>
 </html>
       <html>
@@ -306,17 +185,8 @@ function limparPontuacao() {
 <body>
   <button onclick="gerarNome()">Gerar Nome</button>
   <p id="nomeGerado"></p>
-  <script>
-    // Arrays com nomes fictícios
-    var nomes = ["João", "Maria", "Pedro", "Ana", "Carlos", "Mariana", "André", "Laura", "Rafael", "Isabela", "Fernando", "Camila", "Gustavo", "Juliana", "Rodrigo", "Amanda", "Lucas", "Carolina", "Tiago", "Gabriela", "Eduardo", "Larissa", "Daniel", "Letícia", "Marcelo", "Beatriz", "Alexandre", "Vanessa", "Felipe", "Manuela", "Renato", "Helena", "Guilherme", "Natália", "Hugo", "Sophia", "Leonardo", "Júlia", "Vitor", "Luiza", "Thiago", "Débora", "Matheus", "Carla", "Bruno", "Renata", "Ricardo", "Tatiana", "Paulo", "Patrícia", "Diego", "Mariane", "Sérgio", "Sabrina", "Roberto", "Bianca", "Miguel", "Mara", "Cristiano", "Raquel", "Raul", "Valentina", "Alex", "Priscila", "Arthur", "Luana", "Nuno", "Susana", "Simão", "Teresa", "Fábio", "Inês", "Pedro", "Rita", "Daniel", "Sandra", "Luís", "Cátia", "André", "Marta", "Nelson", "Carina", "Hélder", "Andreia", "Ricardo", "Carmen", "Samuel", "Isabel", "Marco", "Carla", "Tiago", "Mónica", "José", "Catarina", "Manuel", "Lúcia", "António", "Filipa", "Joana", "Andreia", "Rui", "Sara", "Jaime", "Liliana", "Mário", "Jéssica", "Adriano", "Diana", "Diogo", "Margarida", "Jorge", "Telma", "Carlos", "Filipe", "Rafael", "Maria", "Rita", "Rogério", "Ana", "Augusto", "Patrícia", "Maurício", "Teresa", "Cláudio", "Andreia", "Alberto", "Sandra", "André", "Catarina", "Emanuel", "Susana", "Filipe", "Sílvia", "Tomás", "Célia", "Guilherme", "Rita", "Henrique", "Joana", "Francisco", "Mónica", "Leonardo", "Inês", "Santiago", "Bianca", "Joaquim", "Rafaela", "Luiz", "Lara", "Enzo", "Vitória", "Elias", "Lívia", "Lorenzo", "Valentina", "Emanuel", "Ana", "Carlos", "Mariana", "André", "Laura", "Rafael", "Isabela", "Fernando", "Camila", "Gustavo", "Juliana", "Rodrigo", "Amanda", "Lucas", "Carolina", "Tiago", "Gabriela"];
-    var sobrenomes = ["Silva", "Santos", "Souza", "Oliveira", "Pereira", "Rodrigues", "Almeida", "Ferreira", "Lima", "Gomes", "Costa", "Ribeiro", "Martins", "Rocha", "Mendes", "Carvalho", "Nascimento", "Cavalcanti", "Barbosa", "Fernandes", "Sousa", "Melo", "Freitas", "Cardoso", "Santana", "Castro", "Andrade", "Araújo", "Azevedo", "Campos", "Duarte", "Figueiredo", "Gonçalves", "Lopes", "Marques", "Miranda", "Monteiro", "Morais", "Moreira", "Nunes", "Pinto", "Reis", "Sampaio", "Santos", "Teixeira", "Vieira", "Vargas", "Xavier", "Zimmermann", "Abreu", "Aguiar", "Albuquerque", "Alencar", "Alves", "Amaral", "Amorim", "Andrade", "Antunes", "Araújo", "Assis", "Azevedo", "Bastos", "Batista", "Bezerra", "Borges", "Braga", "Brito", "Cabral", "Caldeira", "Caldas", "Camacho", "Campos", "Cardoso", "Carneiro", "Carvalho", "Cavalcante", "Chaves", "Coelho", "Cordeiro", "Correa", "Cortês", "Coutinho", "Cruz", "Cunha", "Dias", "Domingues", "Duarte", "Elias", "Esteves", "Fagundes", "Farias", "Fernandes", "Ferraz", "Ferreira", "Figueiredo", "Flores", "Fontes", "Freitas", "Garcia", "Gaspar", "Gomes", "Gonçalves", "Guimarães", "Jesus", "Lima", "Lopes", "Luz", "Madeira", "Magalhães", "Marafigo", "Marinho", "Marques", "Martins", "Medeiros", "Melo", "Mendes", "Miranda", "Moraes", "Moreira", "Morais", "Nascimento", "Neves", "Nogueira", "Noronha", "Novais", "Oliveira", "Pacheco", "Paes", "Pais", "Peixoto", "Pereira", "Pinto", "Ramos", "Reis", "Ribeiro", "Rocha", "Rodrigues", "Sá", "Santana", "Santiago", "Santos", "Seabra", "Silva", "Simões", "Soares", "Sousa", "Souza", "Tavares", "Teixeira", "Torres", "Valente", "Vasconcelos", "Veiga", "Viana", "Vieira", "Vilela", "Xavier", "Zimmermann"];
-    function gerarNome() {
-      var nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];
-      var sobrenomeAleatorio = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
-      var nomeCompleto = nomeAleatorio + " " + sobrenomeAleatorio;
-      document.getElementById("nomeGerado").textContent = nomeCompleto;
-    }
-  </script>
+<script src="script4.js"></script>
+
 </body>
 </html>
   </div>
@@ -324,29 +194,8 @@ function limparPontuacao() {
 <html>
 <head>
     <title>Gerador de CNPJ</title>
-    <script>
-        function gerarCNPJ() {
-            var n1 = Math.floor(Math.random() * 10);
-            var n2 = Math.floor(Math.random() * 10);
-            var n3 = Math.floor(Math.random() * 10);
-            var n4 = Math.floor(Math.random() * 10);
-            var n5 = Math.floor(Math.random() * 10);
-            var n6 = Math.floor(Math.random() * 10);
-            var n7 = Math.floor(Math.random() * 10);
-            var n8 = Math.floor(Math.random() * 10);
-            var n9 = 0;
-            var n10 = 0;
-            var n11 = 0;
-            var n12 = 1;
-            var digito1 = (n12 * 2 + n11 * 3 + n10 * 4 + n9 * 5 + n8 * 6 + n7 * 7 + n6 * 8 + n5 * 9 + n4 * 2 + n3 * 3 + n2 * 4 + n1 * 5) % 11;
-            digito1 = digito1 < 2 ? 0 : 11 - digito1;
+<script src="script5.js"></script>
 
-            var digito2 = (digito1 * 2 + n12 * 3 + n11 * 4 + n10 * 5 + n9 * 6 + n8 * 7 + n7 * 8 + n6 * 9 + n5 * 2 + n4 * 3 + n3 * 4 + n2 * 5 + n1 * 6) % 11;
-            digito2 = digito2 < 2 ? 0 : 11 - digito2;
-            var cnpj = '' + n1 + n2 + '.' + n3 + n4 + n5 + '.' + n6 + n7 + n8 + '/' + n9 + n10 + n11 + n12 + '-' + digito1 + digito2;
-            document.getElementById('cnpj').innerHTML = cnpj;
-        }
-    </script>
 </head>
 <body>
     <h1>Gerador de CNPJ</h1>
@@ -358,27 +207,15 @@ function limparPontuacao() {
   <div id="tabs-4">
 <html>
 <head>
-  <style>
-    .titulo {
-      font-size: 24px; /* Tamanho da fonte desejado */
-    }
-  </style>
-  <script>
-    function gerarMatricula() {
-      var matricula = "";
-      var digitos = "0123456789";
-
-      for (var i = 0; i < 6; i++) {
-        var randomIndex = Math.floor(Math.random() * digitos.length);
-        matricula += digitos.charAt(randomIndex);
-      }
-      return matricula;
-    }
-    function exibirMatricula() {
-      var numeroMatricula = gerarMatricula();
-      document.getElementById("matricula").textContent = numeroMatricula;
-    }
-  </script>
+<style>
+  .titulo {
+    font-size: 10x; /* Tamanho da fonte desejado */
+    margin-bottom: 50px; /* Ajuste o espaçamento abaixo do título */
+    text-align: center;  /* Centraliza o título */
+    font-weight: bold;  /* Torna o título em negrito */
+  }
+</style>
+<script src="script6.js"></script>
 </head>
 <body>
   <h4>Gerador de Número de Matrícula</h4>
@@ -851,454 +688,7 @@ h1{
     <br>        
     </div>
 </div>
-<script>
-    if(document.getElementById("title") != "Gerador de AFD"){
-    document.getElementById("GeradorAfd").getElementsByTagName("P")[0].style.color = "rgb(0, 131, 192)";
-    document.getElementById("GeradorAfd").style.borderBottomWidth = "3px"
-    }
-    function ignoraweek(){
-        document.getElementById("sabado").disabled = false;
-        document.getElementById("domingo").disabled = false;
-    }
-    function closedSabado(){
-        document.getElementById("msgs").style.visibility = "hidden"
-    }
-    function closedDomingo(){
-        document.getElementById("msgd").style.visibility = "hidden"
-    }
-    ''
-    function sabado() {
-    var sabado = document.getElementById("sabado");
-    var domingo = document.getElementById("domingo");
-    var datainicial = document.getElementById("dataInicial").value;
-    var newDateInicial = new Date(datainicial);
-    var datafinal = document.getElementById("dataFinal").value;
-    if(sabado.checked && newDateInicial.getDay() == 5){
-        document.getElementById("msgs").style.visibility = "visible"
-        document.getElementById("msgs").style.transitionDelay = "200ms"
-        document.getElementById("dataInicial").value = "";
-        sabado.checked = false;
-}if(sabado.checked){
-    document.getElementById("saturday").style.textDecoration = "line-through"
-}else{
-    document.getElementById("saturday").style.textDecoration = "none"
-}
-}
-    function domingo() {
-    var sabado = document.getElementById("sabado");
-    var domingo = document.getElementById("domingo");
-    var datainicial = document.getElementById("dataInicial").value;
-    var newDateInicial = new Date(datainicial);
-    var datafinal = document.getElementById("dataFinal").value
-    if(domingo.checked && newDateInicial.getDay() == 6){
-        document.getElementById("msgd").style.visibility = "visible";
-        document.getElementById("msgd").style.transitionDelay = "200ms"
-        document.getElementById("dataInicial").value = "";
-        domingo.checked = false;
-}if(domingo.checked){
-    document.getElementById("sunday").style.textDecoration = "line-through"
-}else{
-    document.getElementById("sunday").style.textDecoration = "none"
-}
-}
-    function datasif(startDate, endDate, steps = 1){
-    const dateArray = [];
-    let currentDate = new Date(startDate);
-    let currentEndDate = new Date(endDate)
-    currentEndDate.setHours(24)
-    currentDate.setHours(24)
-    console.log(currentDate)
-    startDate = startDate.setUTCDate
-    while (currentDate <= new Date(currentEndDate)) {
-        dateArray.push(new Date(currentDate));
-        currentDate.setUTCDate(currentDate.getUTCDate() + steps);
-
-    var sabado = document.getElementById("sabado");
-    var domingo = document.getElementById("domingo");
-    var datainicial = document.getElementById("dataInicial").value;
-    var datafinal = document.getElementById("dataFinal").value
-
-        if(sabado.checked && !domingo.checked){
-            if(currentDate.getDay() == 5) {
-                steps = 2
-            }else {
-                steps = 1
-            }
-        }
-        if(domingo.checked && !sabado.checked){
-            if(currentDate.getDay() == 6) {
-                steps = 2
-            }else {
-                steps = 1
-            }
-        }
-        if(domingo.checked && sabado.checked){
-            if(currentDate.getDay() == 5) {
-                steps = 3
-            }else {
-                steps = 1
-            }
-        }
-        
-    }
-
-    return dateArray;
-}
-
-
-    setInterval(function(d){
-
-        var resetTimeBatida1 = document.getElementById("batida1");
-        clearTimeout( resetTimeBatida1);
-
-        var resetTimeBatida2 = document.getElementById("batida2");
-        clearTimeout( resetTimeBatida2);
-
-        var resetTimeBatida3 = document.getElementById("batida3");
-        clearTimeout( resetTimeBatida3);
-
-        var resetTimeBatida4 = document.getElementById("batida4");
-        clearTimeout( resetTimeBatida4);
-
-        var batida1 = document.getElementById("batida1");
-        var valueBatida1 = batida1.value;
-
-        var batida2 = document.getElementById("batida2");
-        var valueBatida2 = batida2.value;
-
-        var batida3 = document.getElementById("batida3");
-        var valueBatida3 = batida3.value;
-
-        var batida4 = document.getElementById("batida4");
-        var valueBatida4 = batida4.value;
-
-        var gerarAfd = document.getElementById("gerarAfd");
-
-        var aleatorio = document.getElementById("aleatorio");
-        var sabado = document.getElementById("sabado");
-        var sabado = document.getElementById("domingo");
-        var sabadoValue = sabado.value;
-        var domingoValue = domingo.value;
-        var aleatorioValue = aleatorio.value;
-
-        clearTimeout ( sabado );
-        clearTimeout (sabadoValue );
-        clearTimeout ( domingo );
-        clearTimeout ( domingoValue );
-        clearTimeout( aleatorio );
-        clearTimeout( aleatorioValue );
-
-},300)
-
-
-    function valueNumber(e) {
-
-        batidaErro1 = document.getElementById("batida1");
-        batidaErro2 = document.getElementById("batida2");
-        batidaErro3 = document.getElementById("batida3");
-        batidaErro4 = document.getElementById("batida4");
-        pisErro = document.getElementById("pisColaborador");
-
-        if(document.getElementsByClassName("batidac").value = ""){
-        document.getElementById("pisColaborador") = "";
-
-    }if(!document.getElementById("aleatorio").checked && document.getElementById("batida1").value == ""){
-        document.getElementById("batida1").style.border = "solid rgb(255, 0, 0)";
-        document.getElementById("pisColaborador") = "";
-        
-
-    }   if(!document.getElementById("aleatorio").checked && document.getElementById("batida2").value == ""){
-        document.getElementById("batida2").style.border = "solid rgb(255, 0, 0)";
-        document.getElementById("pisColaborador") = "";
-
-
-    }   if(!document.getElementById("aleatorio").checked && document.getElementById("batida3").value == ""){
-        document.getElementById("batida3").style.border = "solid rgb(255, 0, 0)";
-        document.getElementById("pisColaborador") = "";
-
-
-    }   if(!document.getElementById("aleatorio").checked && document.getElementById("batida4").value == ""){
-        document.getElementById("batida4").style.border = "solid rgb(255, 0, 0)";
-        document.getElementById("pisColaborador") = "";
-
-    } if(document.getElementById("pisColaborador").value == ""){
-        document.getElementById("pisColaborador").style.border = "solid rgb(255, 0, 0)";
-
-    }if(!document.getElementById("aleatorio").checked && document.getElementById("dataInicial").value == ""){
-        document.getElementById("dataInicial").style.border = "solid rgb(255, 0, 0)";
-    }if(!document.getElementById("aleatorio").checked && document.getElementById("dataFinal").value == ""){
-        document.getElementById("dataFinal").style.border = "solid rgb(255, 0, 0)";
-    }    
-    else{
-        document.getElementById("batida1").style.border = "solid 1px #ccc";
-        document.getElementById("batida2").style.border = "solid 1px #ccc";
-        document.getElementById("batida3").style.border = "solid 1px #ccc";
-        document.getElementById("batida4").style.border = "solid 1px #ccc";
-        document.getElementById("pisColaborador").style.border = "solid 1px #ccc";
-        document.getElementById("dataInicial").style.border = "solid 1px #ccc";
-        document.getElementById("dataFinal").style.border = "solid 1px #ccc";
-      var aleatorio = document.getElementById("aleatorio");
-
-      clear = document.querySelector("#resultado");
-      document.querySelector("#resultado").innerHTML = "";
-      
-      var pis = document.querySelector("#pisColaborador");
-      var valorpis = `${pis.value}`;
-      var pisSplit = valorpis.split(',');
-
-      //let pis0 = pisSplit[0]
-      //let pis1 = pisSplit[1]
-      //let pis2 = pisSplit[2]
-      var batida1 = document.querySelector("#batida1");
-      var marc1 = batida1.value;
-      var replacePonto1 = (marc1).replaceAll(":", "");
-
-      var batida2 = document.querySelector("#batida2");
-      var marc2 = batida2.value;
-      var replacePonto2 = (marc2).replaceAll(":", "");
-
-      var batida3 = document.querySelector("#batida3");
-      var marc3 = batida3.value;
-      var replacePonto3 = (marc3).replaceAll(":", "");
-
-      var batida4 = document.querySelector("#batida4");
-      var marc4 = batida4.value;
-      var replacePonto4 = (marc4).replaceAll(":", "");
-      var periodoi = document.querySelector("#dataInicial");
-      var datai = periodoi.value;
-      let datas = datai.split('-');
-      let anoi = datas[0]
-      let mesi = datas[1]
-      let diai = datas[2]
-      let dataBraba = diai+mesi+anoi;     
-      var periodof = document.querySelector("#dataFinal");
-      var dataf = periodof.value;
-      let datasf = dataf.split('-');
-      let anof = datas[0]
-      let mesf = datas[1]
-      let diaf = datas[2]
-      let dataBrabaf = diaf+mesf+anof ;
-      let checkbox = document.getElementById("aleatorio");
-      if(checkbox.checked){
-      const dates = datasif(datai,  dataf).map(elem => elem.toLocaleDateString());
-      console.log(dates);
-      let periodos = dates.value;
-            for (let i=0; i < pisSplit.length; i++){
-                console.log(pisSplit[i]);
-                var NSR = 100000000;
-
-                for (let j=0; j < dates.length; j++){
-
-
-                    for(let i=0; i < pisSplit.length; i++){
-                        
-
-batida1.value += Math.floor(Math.random() * (23 + 1))
-batida1.value += Math.floor(Math.random() * (5 + 1))
-batida1.value += Math.floor(Math.random() * (9 + 1))
-
-batida2.value += Math.floor(Math.random() * (23 + 1));
-batida2.value += Math.floor(Math.random() * (5 + 1));
-batida2.value += Math.floor(Math.random() * (9 + 1));
-
-batida3.value += Math.floor(Math.random() * (23 + 1));
-batida3.value += Math.floor(Math.random() * (5 + 1));
-batida3.value += Math.floor(Math.random() * (9 + 1));
-
-batida4.value += Math.floor(Math.random() * (23 + 1));
-batida4.value += Math.floor(Math.random() * (5 + 1));
-batida4.value += Math.floor(Math.random() * (9 + 1));
-
-while(batida1.value.length < 4){ 
-    batida1.value = "0" + batida1.value;
-    batida1.value.length++;
-}
-while(batida2.value.length < 4){
-    batida2.value = "0" + batida2.value;
-    batida2.value.length++;
-}
-while(batida3.value.length < 4){
-    batida3.value = "0" + batida3.value;
-    batida3.value.length++;
-}
-while(batida4.value.length < 4){
-    batida4.value = "0" + batida4.value;
-    batida4.value.length++;
-}
-var espaco = "  "
-while(espaco.length < 150){
-    espaco = espaco + " ";
-}
-       document.querySelector("#resultado").innerHTML +=
-`0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
-${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida1.value}0${pisSplit[i]}
-0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
-${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida2.value}0${pisSplit[i]}
-0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
-${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida3.value}0${pisSplit[i]}
-0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
-${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida4.value}0${pisSplit[i]}
-`
-
-      /*"0000000001156198340000123000000000000" + 
-      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
-      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
-      batida1.value + "0" + pisSplit[i] + "<br>" + "<br>" + 
-      "0000000001156198340000123000000000000" + 
-      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
-      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
-      batida2.value + "0" + pisSplit[i] + "<br>" + "<br>" +
-      "0000000001156198340000123000000000000" + 
-      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
-      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
-      batida3.value + "0" + pisSplit[i] + "<br>" + "<br>" +
-      "0000000001156198340000123000000000000" + 
-      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
-      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
-      batida4.value + "0" + pisSplit[i] + "<br>" + "<br>";*/
-
-            batida1.value = "";
-            batida2.value = "";
-            batida3.value = "";
-            batida4.value = "";
-   
-        
-    }
-}
-
-    }
-      }else{
-          
-      for (let i=0; i < pisSplit.length; i++){
-          console.log(pisSplit[i]);
-          var NSR = 100000000;
-
-
-          const dates = datasif(datai,  dataf).map(elem => elem.toLocaleDateString());
-          for (let j=0; j < dates.length; j++){
-            var espaco = "  "
-while(espaco.length < 150){
-    espaco = espaco + " ";
-}
-
-
-            document.querySelector("#resultado").innerHTML +=
-`0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
-${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida1.value.replaceAll(":", "")}0${pisSplit[i]}
-0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
-${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida2.value.replaceAll(":", "")}0${pisSplit[i]}
-0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
-${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida3.value.replaceAll(":", "")}0${pisSplit[i]}
-0000000001156198340000123000000000000${espaco}00000000001075938${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}${dates[j].replaceAll("/", "")}
-${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida4.value.replaceAll(":", "")}0${pisSplit[i]}
-`
-      
-
-          /*document.querySelector("#resultado").innerHTML +=
-      "0000000001156198340000123000000000000" + 
-      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
-      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
-      batida1.value.replaceAll(":", "") + "0" + pisSplit[i] + "<br>" + "<br>" + 
-      "0000000001156198340000123000000000000" + 
-      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
-      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
-      batida2.value.replaceAll(":", "") + "0" + pisSplit[i] + "<br>" + "<br>" +
-      "0000000001156198340000123000000000000" + 
-      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
-      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
-      batida3.value.replaceAll(":", "") + "0" + pisSplit[i] + "<br>" + "<br>" +
-      "0000000001156198340000123000000000000" + 
-      "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" +
-      "00000000001075938" + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + dates[j].replaceAll("/", "") + "<br>" + (NSR++) + "3" + dates[j].replaceAll("/", "") +
-      batida4.value.replaceAll(":", "") + "0" + pisSplit[i] + "<br>" + "<br>"; */
-
-    }
-}
-    
-}
-    var textToSave = document.getElementById('resultado').innerHTML;
-    var hiddenElement = document.createElement('a');
-
-    hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
-    hiddenElement.target = '_blank';
-    hiddenElement.download = 'AfdFicticio.txt';
-    hiddenElement.click();
-
-    // document.getElementById("baixarAfd").addEventListener("click");
-
-
-    }
-}
-
-
-    function checkValidacao(e){
-        var checkbox = document.getElementById("aleatorio");
-        let batida1 = document.getElementById("batida1")
-        let batida2 = document.getElementById("batida2")
-        let batida3 = document.getElementById("batida3")
-        let batida4 = document.getElementById("batida4")
-
-      
-            if(checkbox.checked) {
-            batida1.type = "text";
-            batida2.type = "text";
-            batida3.type = "text";
-            batida4.type = "text";
-
-           /* batida1.value += Math.floor(Math.random() * (23 + 1) + 1);
-            batida1.value += Math.floor(Math.random() * (58 + 1) + 1);
-            batida2.value += Math.floor(Math.random() * (23 + 1) + 1);
-            batida2.value += Math.floor(Math.random() * (58 + 1) + 1);
-            batida3.value += Math.floor(Math.random() * (23 + 1) + 1);
-            batida3.value += Math.floor(Math.random() * (58 + 1) + 1);
-            batida4.value += Math.floor(Math.random() * (23 + 1) + 1);
-            batida4.value += Math.floor(Math.random() * (58 + 1) + 1);
-            while(batida1.value.length < 4){ 
-                batida1.value = "0" + batida1.value;
-                batida1.value.length++;
-            }
-            while(batida2.value.length < 4){
-                batida2.value = "0" + batida2.value;
-                batida2.value.length++;
-            }
-            while(batida3.value.length < 4){
-                batida3.value = "0" + batida3.value;
-                batida3.value.length++;
-            }
-            while(batida4.value.length < 4){
-                batida4.value = "0" + batida4.value;
-                batida4.value.length++;
-            }*/
-            batida1.disabled = true;
-            batida2.disabled = true;
-            batida3.disabled = true;
-            batida4.disabled = true;
-        }
-
-            else{
-            batida1.type = "time";
-            batida2.type = "time";
-            batida3.type = "time";
-            batida4.type = "time";
-            batida1.disabled = false;
-            batida2.disabled = false;
-            batida3.disabled = false;
-            batida4.disabled = false;
-            }
-            if(batida1.disabled){
-                batida1.style.backgroundColor = "rgb(207, 207, 207)";
-                batida2.style.backgroundColor = "rgb(207, 207, 207)";
-                batida3.style.backgroundColor = "rgb(207, 207, 207)";
-                batida4.style.backgroundColor = "rgb(207, 207, 207)";
-            }else{
-                batida1.style.backgroundColor = "rgb(255, 249, 249)";
-                batida2.style.backgroundColor = "rgb(255, 249, 249)";
-                batida3.style.backgroundColor = "rgb(255, 249, 249)";
-                batida4.style.backgroundColor = "rgb(255, 249, 249)";
-            }
-        }
-
-  </script>
+<script src="script7.js"></script>
 </body>
 <h1>Copyright ©2023 - Joarle Mafra - ALL RIGHTS RESERVED<h1/>
 </html>
@@ -1324,141 +714,16 @@ ${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida4.value.replaceAll(":", "")
     </form> 
     <p id="result"></p>
 
-    <script>
-        document.getElementById("timeForm").addEventListener("submit", function(event){
-            event.preventDefault()
-            let startTime = document.getElementById("startTime").valueAsNumber
-            let endTime = document.getElementById("endTime").valueAsNumber
-            let lunchStart = document.getElementById("lunchStart").valueAsNumber
-            let lunchEnd = document.getElementById("lunchEnd").valueAsNumber
-            let result = endTime - startTime - (lunchEnd - lunchStart)
-            let hours = Math.floor(result / 3600000)
-            let minutes = Math.floor((result % 3600000) / 60000)
-            if (hours >= 0) {
-                document.getElementById("result").innerHTML = "Tempo total trabalhado: " + hours + " horas e " + minutes + " minutos."
-            } else {
-                document.getElementById("result").innerHTML = "Por favor, verifique se as horas inseridas estão corretas."
-            }
-        });
-    </script>
+<script src="script8.js"></script>
+
 </body>
 </html>
 
 <div id="resultado"></div>
 
-<script>
-  function formatarHora(input) {
-    const valor = input.value;
-    const padrao = /^([0-9]{0,2})([0-9]{0,2})$/;
-    const match = valor.match(padrao);
+<script src="script9.js"></script>
 
-    if (match) {
-      const hora = match[1] || "00";
-      const minuto = match[2] || "00";
-
-      input.value = `${hora.padStart(2, "0")}:${minuto.padStart(2, "0")}`;
-    } else {
-      input.value = "";
-    }
-  }
-
-  function calcularDiferencaDeTempo(entrada, intervalo, retornoIntervalo, fimExpediente) {
-    // Extrai as horas e minutos das strings de tempo
-    const entradaSplit = entrada.split(":");
-    const intervaloSplit = intervalo.split(":");
-    const retornoIntervaloSplit = retornoIntervalo.split(":");
-    const fimExpedienteSplit = fimExpediente.split(":");
-
-    // Converte as horas e minutos para números inteiros
-    const entradaHora = parseInt(entradaSplit[0], 10);
-    const entradaMinuto = parseInt(entradaSplit[1], 10);
-    const intervaloHora = parseInt(intervaloSplit[0], 10);
-    const intervaloMinuto = parseInt(intervaloSplit[1], 10);
-    const retornoHora = parseInt(retornoIntervaloSplit[0], 10);
-    const retornoMinuto = parseInt(retornoIntervaloSplit[1], 10);
-    const fimHora = parseInt(fimExpedienteSplit[0], 10);
-    const fimMinuto = parseInt(fimExpedienteSplit[1], 10);
-
-    // Calcula a diferença de tempo em minutos
-    const diferencaMinutos =
-      ((intervaloHora * 60 + intervaloMinuto) - (entradaHora * 60 + entradaMinuto)) +
-      ((fimHora * 60 + fimMinuto) - (retornoHora * 60 + retornoMinuto));
-
-    // Calcula a diferença de tempo em horas e minutos
-    const diferencaHora = Math.floor(diferencaMinutos / 60);
-    const diferencaMinutosRestantes = diferencaMinutos % 60;
-
-    // Formata a diferença de tempo como uma string "HH:MM"
-    const diferencaFormatada = `${diferencaHora.toString().padStart(2, "0")}:${diferencaMinutosRestantes
-      .toString()
-      .padStart(2, "0")}`;
-
-    return diferencaFormatada;
-  }
-function calcular() {
-  const entrada = document.getElementById("entrada").value;
-  const intervalo = document.getElementById("intervalo").value;
-  const retornoIntervalo = document.getElementById("retornoIntervalo").value;
-  const fimExpediente = document.getElementById("fimExpediente").value;
-
-  const horasEntrada = Number(entrada.split(":")[0]);
-  const minutosEntrada = Number(entrada.split(":")[1]);
-  const horasIntervalo = Number(intervalo.split(":")[0]);
-  const minutosIntervalo = Number(intervalo.split(":")[1]);
-  const horasRetornoIntervalo = Number(retornoIntervalo.split(":")[0]);
-  const minutosRetornoIntervalo = Number(retornoIntervalo.split(":")[1]);
-  const horasFimExpediente = Number(fimExpediente.split(":")[0]);
-  const minutosFimExpediente = Number(fimExpediente.split(":")[1]);
-
-  let totalHoras = 0;
-  let totalMinutos = 0;
-
-  if (horasEntrada > horasFimExpediente || (horasEntrada === horasFimExpediente && minutosEntrada > minutosFimExpediente)) {
-    totalHoras += 24 - horasEntrada + horasFimExpediente;
-    totalMinutos += minutosFimExpediente - minutosEntrada;
-  } else {
-    totalHoras += horasFimExpediente - horasEntrada;
-    totalMinutos += minutosFimExpediente - minutosEntrada;
-  }
-
-  if (horasIntervalo > horasRetornoIntervalo || (horasIntervalo === horasRetornoIntervalo && minutosIntervalo > minutosRetornoIntervalo)) {
-    totalHoras -= 24 - horasIntervalo + horasRetornoIntervalo;
-    totalMinutos -= minutosRetornoIntervalo - minutosIntervalo;
-  } else {
-    totalHoras -= horasRetornoIntervalo - horasIntervalo;
-    totalMinutos -= minutosRetornoIntervalo - minutosIntervalo;
-  }
-
-  if (totalMinutos < 0) {
-    totalMinutos += 60;
-    totalHoras--;
-  }
-
-  const totalFormatado = `${totalHoras.toString().padStart(2, "0")}:${totalMinutos.toString().padStart(2, "0")}`;
-
-  document.getElementById("resultado").innerText = totalFormatado;
-}
-
-function formatarHora(hora) {
-  if (hora.length === 4) {
-    return hora.slice(0, 2) + ":" + hora.slice(2);
-  } else {
-    return hora;
-  }
-}
-
-function atualizarCampo(event) {
-  const campo = event.target;
-  const valor = campo.value;
-  campo.value = formatarHora(valor);
-}
-
-document.getElementById("entrada").addEventListener("blur", atualizarCampo);
-document.getElementById("intervalo").addEventListener("blur", atualizarCampo);
-document.getElementById("retornoIntervalo").addEventListener("blur", atualizarCampo);
-document.getElementById("fimExpediente").addEventListener("blur", atualizarCampo);
-
-</script></p>
+</p>
 
   </div>
   <div id="tabs-7">
@@ -1497,41 +762,73 @@ document.getElementById("fimExpediente").addEventListener("blur", atualizarCampo
         <meta charset="UTF-8">
         <title>Sorteador de Nomes</title>
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: 100vh;
-                margin: 0;
-                background-color: #f0f0f0;
-            }
-            #container-8 {
-                background: white;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            }
-            #name-list-8 {
-                width: 300px;
-                height: 150px;
-            }
-            #result-8, #date-time-8 {
-                font-size: 1.5em;
-                margin-top: 20px;
-            }
-            button {
-                margin-top: 10px;
-                padding: 10px 20px;
-                font-size: 1em;
-            }
-            input[type="number"] {
-                margin-top: 10px;
-                padding: 5px;
-                font-size: 1em;
-                width: 80px;
-            }
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+#container-8 {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px; /* Limita a largura máxima do container */
+    box-sizing: border-box; /* Para garantir que o padding seja contado na largura total */
+}
+
+#name-list-8 {
+    width: 100%; /* Ajusta a largura para 100% do container */
+    height: 150px;
+    max-width: 100%; /* Impede que ultrapasse a largura do container */
+}
+
+#result-8, #date-time-8 {
+    font-size: 1.5em;
+    margin-top: 20px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 1em;
+}
+
+input[type="number"] {
+    margin-top: 10px;
+    padding: 5px;
+    font-size: 1em;
+    width: 100%; /* Ajusta a largura para ocupar toda a largura do container */
+    max-width: 120px; /* Impede que o campo ultrapasse um tamanho máximo */
+}
+
+@media screen and (max-width: 600px) {
+    #container-8 {
+        width: 90%; /* Reduz o tamanho do container em telas pequenas */
+        padding: 10px; /* Reduz o padding para se ajustar melhor */
+    }
+    #name-list-8 {
+        width: 100%;
+        height: 120px; /* Ajusta a altura para telas pequenas */
+    }
+    input[type="number"] {
+        width: 100%; /* Faz com que o campo ocupe toda a largura em telas pequenas */
+        max-width: 100%;
+    }
+    #result-8, #date-time-8 {
+        font-size: 1.2em; /* Reduz o tamanho da fonte para telas pequenas */
+    }
+    button {
+        width: 100%; /* Faz o botão ocupar toda a largura disponível */
+    }
+}
+
         </style>
     </head>
     <body>
@@ -1543,35 +840,8 @@ document.getElementById("fimExpediente").addEventListener("blur", atualizarCampo
             <div id="result-8"></div>
             <div id="date-time-8"></div>
         </div>
-        <script>
-            function sortearNome() {
-                const nameList = document.getElementById('name-list-8').value.trim().split('\n');
-                const quantity = parseInt(document.getElementById('quantity-8').value);
-                const resultDiv = document.getElementById('result-8');
-                const dateTimeDiv = document.getElementById('date-time-8');
+<script src="script10.js"></script>
 
-                if (nameList.length > 0 && quantity > 0) {
-                    const sortedNames = [];
-                    const nameListCopy = [...nameList];
-
-                    for (let i = 0; i < Math.min(nameList.length, quantity); i++) {
-                        const randomIndex = Math.floor(Math.random() * nameListCopy.length);
-                        sortedNames.push(nameListCopy.splice(randomIndex, 1)[0]);
-                    }
-
-                    resultDiv.textContent = 'Nomes sorteados: ' + sortedNames.join(', ');
-
-                    const now = new Date();
-                    const formattedDateTime = now.toISOString().replace('T', ' ').substring(0, 19);
-                    dateTimeDiv.textContent = 'Sorteio realizado em: ' + formattedDateTime;
-                } else {
-                    resultDiv.textContent = 'Por favor, insira ao menos um nome e uma quantidade válida.';
-                    dateTimeDiv.textContent = '';
-                }
-            }
-
-            document.getElementById('sort-button-8').addEventListener('click', sortearNome);
-        </script>
     </body>
     </html>
 </div>
@@ -1733,18 +1003,7 @@ else if (mobile) {
              <p>&nbsp;</p>
         </div>
     </div>
-    <!--footer end-->
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-10660625-11', 'auto');
-  ga('send', 'pageview');
-
-</script>
+    
 
 
 <div id="stcpDiv" style="position: absolute; top: -1999px; left: -1988px;">ShareThis Copy and Paste</div><div id="stwrapper" class="stwrapper stwrapper4x" style="display: none;"><iframe allowtransparency="true" id="stLframe" class="stLframe" name="stLframe" frameborder="0" scrolling="no" src="https://ws.sharethis.com/secure/index.html"></iframe></div><div id="stOverlay" onclick="javascript:stWidget.closeWidget();"></div></body></html>
@@ -1758,56 +1017,13 @@ else if (mobile) {
     <h4>Exibir Versão do Navegador</h4>
     <p id="browser-version"></p>
 
-    <script>
-      var userAgent = navigator.userAgent;
-      var browserName = getBrowserName(userAgent);
-      var browserVersion = getBrowserVersion(userAgent);
-
-      document.getElementById("browser-version").innerHTML = "Seu navegador é " + browserName + " " + browserVersion;
-
-      function getBrowserName(userAgent) {
-        var browsers = ["Chrome", "Firefox", "Safari", "Opera", "MSIE", "Trident", "Edge"];
-        for (var i = 0; i < browsers.length; i++) {
-          if (userAgent.indexOf(browsers[i]) !== -1) {
-            return browsers[i];
-          }
-        }
-        return "Desconhecido";
-      }
-
-      function getBrowserVersion(userAgent) {
-        var versionIndex = userAgent.indexOf("Version/");
-        if (versionIndex === -1) {
-          versionIndex = userAgent.indexOf(browserName) + browserName.length + 1;
-        } else {
-          versionIndex += 8;
-        }
-        var versionString = userAgent.substring(versionIndex);
-        var versionParts = versionString.split(/[^\d\.]/);
-        return versionParts[0];
-      }
-    </script>
+<script src="script11.js"></script>
   </body>
 </html>
 <html>
   <head>
     <title>Obter o número do IP</title>
- <script>
-  function getIP() {
-    fetch("https://api.ipify.org?format=json")
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById("ip").textContent = data.ip;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
-  window.onload = function() {
-    document.getElementById("ip").innerHTML = "Seu número de IP é: " + returnCitySN["cip"];
-  }
-</script>
+<script src="script12.js"></script>
 </head>
 <body onload="getIP()">
   <h4 id="ip-address">Carregando endereço IP...</h4>
