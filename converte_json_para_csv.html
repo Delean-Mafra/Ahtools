@@ -1,122 +1,103 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conversor JSON para CSV</title>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython_stdlib.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url('https://static.vecteezy.com/ti/vetor-gratis/t1/7278153-vector-abstrato-ciencia-ou-tecnologia-com-luz-neon-e-espaco-vazio-para-texto-fundo-futurista-vetor.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            color: #ff6600; /* Laranja */
+            text-align: center;
         }
-        input[type="file"] {
-            margin: 20px 0;
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
             padding: 10px;
-            border: 2px solid #4CAF50; /* Verde Excel */
-            border-radius: 5px;
-            background-color: #fff;
-            color: #333;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
         }
         button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50; /* Verde Excel */
-            color: #fff;
+            width: 100%;
+            padding: 10px;
             font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
             background-color: #45a049;
         }
-        #resultado a {
-            display: block;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #000; /* Preto */
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        #resultado a:hover {
-            background-color: #ff0000; /* Vermelho */
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
         }
     </style>
 </head>
-<body onload="brython()">
-<script type="text/python">
-from browser import document, window, alert
-import json
+<body>
 
-# Mapeamento de campos para CSV (se necessário)
-mapa_campos_csv = {
-    "nome": "nome",
-    "matricula": "matricula",
-    "cpf": "CPF"
-}
+<div class="container">
+    <h1>Conversor JSON para CSV</h1>
+    <textarea id="jsonInput" placeholder="Cole o seu JSON aqui"></textarea>
+    <button onclick="convertJsonToCsv()">Converter para CSV</button>
+    <div class="error" id="errorMessage"></div>
+</div>
 
-def processar_arquivo(evt):
-    file = evt.target.files[0]
-    reader = window.FileReader.new()
-    reader.onload = lambda e: processar_conteudo(e.target.result)
-    reader.readAsText(file)
+<script>
+    function convertJsonToCsv() {
+        const jsonInput = document.getElementById('jsonInput').value;
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.innerHTML = '';  // Limpar mensagens de erro
 
-def processar_conteudo(conteudo):
-    dados_json = json.loads(conteudo)
-    
-    if not dados_json:
-        alert("O arquivo JSON está vazio ou inválido!")
-        return
-    
-    # Criar o CSV
-    cabecalho = list(mapa_campos_csv.values())
-    csv_linhas = [",".join(cabecalho)]  # Adicionar o cabeçalho ao CSV
-    
-    for item in dados_json:
-        linha = []
-        for chave in mapa_campos_csv.keys():
-            valor = item.get(chave, "")
-            linha.append(valor)
-        csv_linhas.append(",".join(linha))  # Adicionar a linha formatada ao CSV
-    
-    csv_data = "\n".join(csv_linhas)  # Transformar em string final
-    criar_link_download(csv_data)
+        try {
+            const jsonArray = JSON.parse(jsonInput);  // Parse do JSON
 
-def criar_link_download(csv_data):
-    # Criar o arquivo CSV para download
-    blob = window.Blob.new([csv_data], {'type': 'text/csv'})
-    url = window.URL.createObjectURL(blob)
-    
-    link = document.createElement('a')
-    link.href = url
-    link.download = 'funcionarios.csv'
-    link.textContent = 'Baixar arquivo CSV'
-    
-    document['resultado'].innerHTML = ''
-    document['resultado'] <= link
+            if (!Array.isArray(jsonArray)) {
+                throw new Error('O JSON fornecido não é um array.');
+            }
 
-document['arquivo_json'].bind('change', processar_arquivo)
+            if (jsonArray.length === 0) {
+                throw new Error('O array JSON está vazio.');
+            }
+
+            const keys = Object.keys(jsonArray[0]);  // Chaves do primeiro objeto
+            let csvContent = keys.join(',') + '\n';  // Cabeçalho do CSV
+
+            // Adicionar os valores das linhas
+            jsonArray.forEach(item => {
+                const row = keys.map(key => item[key] || '').join(',');
+                csvContent += row + '\n';
+            });
+
+            // Criar o arquivo CSV para download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'dados.csv';
+            link.click();
+
+        } catch (e) {
+            errorMessage.innerHTML = 'Erro: ' + e.message;
+        }
+    }
 </script>
-
-<h1>Conversor JSON para CSV</h1>
-<input type="file" id="arquivo_json" accept=".json">
-<div id="resultado"></div>
 
 </body>
 </html>
