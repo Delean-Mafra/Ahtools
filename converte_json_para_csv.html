@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor JSON para CSV</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython_stdlib.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://static.vecteezy.com/ti/vetor-gratis/t1/7278153-vector-abstrato-ciencia-ou-tecnologia-com-luz-neon-e-espaco-vazio-para-texto-fundo-futurista-vetor.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            color: #ff6600; /* Laranja */
+        }
+        input[type="file"] {
+            margin: 20px 0;
+            padding: 10px;
+            border: 2px solid #4CAF50; /* Verde Excel */
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50; /* Verde Excel */
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultado a {
+            display: block;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #000; /* Preto */
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        #resultado a:hover {
+            background-color: #ff0000; /* Vermelho */
+        }
+    </style>
+</head>
+<body onload="brython()">
+<script type="text/python">
+from browser import document, window, alert
+import json
+import csv
+
+# Dicionário de mapeamento das colunas do JSON para os campos do CSV
+mapa_campos_csv = {
+    "dataAdmissao": "Data de Admissão",
+    "matricula": "matricula",
+    "nome": "nome",
+    "bate_ponto": "Bate Ponto",
+    "dataNascimento": "Data de Nascimento",
+    "ctps": "Carteira de trabalho",
+    "pis": "pis",
+    "regimeTrabalho": "Regime de Trabalho",
+    "cargo": "cargo",
+    "cnpj": "CNPJ",
+    "dataCnpj": "Data para competencia do CNPJ",
+    "codBarras": "Código de Barras",
+    "codInterno": "Código Interno",
+    "cpf": "cpf",
+    "dataDemissao": "Data de Desligamento",
+    "departamento": "departamento",
+    "carga_horaria": "Carga horaria",
+    "email": "email",
+    "email_chefia": "email_chefia",
+}
+
+def processar_arquivo(evt):
+    file = evt.target.files[0]
+    reader = window.FileReader.new()
+    reader.onload = lambda e: processar_conteudo(e.target.result)
+    reader.readAsText(file)
+
+def processar_conteudo(conteudo):
+    dados_json = json.loads(conteudo)
+    
+    if not dados_json:
+        alert("O arquivo JSON está vazio ou inválido!")
+        return
+    
+    # Obter os cabeçalhos CSV a partir das chaves do primeiro item do JSON
+    cabecalho = [mapa_campos_csv.get(campo, campo) for campo in dados_json[0].keys()]
+    
+    # Criar o conteúdo CSV
+    csv_data = []
+    csv_data.append(cabecalho)
+    
+    for item in dados_json:
+        linha = []
+        for campo_json in item.keys():
+            campo_csv = mapa_campos_csv.get(campo_json, campo_json)
+            linha.append(item[campo_json])
+        csv_data.append(linha)
+    
+    criar_link_download(csv_data)
+
+def criar_link_download(csv_data):
+    # Criar o CSV a partir dos dados
+    output = window.Blob.new([window.JSON.stringify(csv_data)], {'type': 'text/csv'})
+    url = window.URL.createObjectURL(output)
+    
+    link = document.createElement('a')
+    link.href = url
+    link.download = 'funcionarios.csv'
+    link.textContent = 'Baixar arquivo CSV'
+    
+    document['resultado'].innerHTML = ''
+    document['resultado'] <= link
+
+document['arquivo_json'].bind('change', processar_arquivo)
+</script>
+
+<h1>Conversor JSON para CSV</h1>
+<input type="file" id="arquivo_json" accept=".json">
+<div id="resultado"></div>
+
+</body>
+</html>
