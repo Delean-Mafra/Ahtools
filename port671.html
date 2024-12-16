@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exibindo PDF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            height: 80%;
+            text-align: center;
+        }
+        .pdf-container {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Botões para exibir os PDFs -->
+        <button onclick="showEmbed('port671.pdf')">Portaria 671 versão compilada</button>
+        <button onclick="showEmbed('671_anexos.pdf')">Anexos da Portaria 671</button>
+
+        <!-- Contêiner para os PDFs -->
+        <div id="embed-container" class="pdf-container" style="display: none;">
+            <embed id="pdf-embed" src="" type="application/pdf" width="100%" height="100%" />
+        </div>
+    </div>
+
+    <script>
+        function showEmbed(pdfFile) {
+            // Exibe o PDF selecionado no embed
+            document.getElementById('pdf-embed').src = pdfFile;
+            document.getElementById('embed-container').style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>

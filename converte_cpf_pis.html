@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Converte CPF para PIS</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #d3f7d1; /* Fundo verde */
+  }
+  h1 {
+    color: #333;
+  }
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  #output {
+    margin-top: 20px;
+    font-size: 18px;
+    border: 2px solid #ccc;
+    padding: 10px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    background-color: white;
+  }
+  #cpf {
+    font-size: 18px;
+    padding: 10px;
+    margin-top: 20px;
+    width: 300px;
+    border: 2px solid #ccc;
+  }
+</style>
+</head>
+<body>
+<h1>Converte CPF para PIS</h1>
+<input type="text" id="cpf" placeholder="Digite o CPF">
+<button onclick="run()">Validar CPF</button>
+<div id="output"></div>
+<script>
+  function run() {
+    let output = document.getElementById('output');
+    output.innerHTML = '';
+
+    let cpf = document.getElementById('cpf').value;
+
+    cpf = cpf.replace(/\./g, "").replace(/-/g, "");
+
+    let numeros = Array.from(cpf).filter((digito) => !isNaN(digito));
+
+    let quant_digitos = false;
+    let validacao1 = false;
+    let validacao2 = false;
+
+    if (numeros.length === 11) {
+      quant_digitos = true;
+
+      let soma_produtos = numeros
+        .slice(0, 9)
+        .reduce((sum, digito, index) => sum + digito * (10 - index), 0);
+      let digito_esperado = (soma_produtos * 10) % 11 % 10;
+      if (numeros[9] == digito_esperado) {
+        validacao1 = true;
+      }
+
+      let soma_produtos1 = numeros
+        .slice(0, 10)
+        .reduce((sum, digito, index) => sum + digito * (11 - index), 0);
+      let digito_esperado1 = (soma_produtos1 * 10) % 11 % 10;
+      if (numeros[10] == digito_esperado1) {
+        validacao2 = true;
+      }
+
+      if (quant_digitos && validacao1 && validacao2) {
+        output.innerHTML += `O CPF ${cpf} é válido.<br>`;
+        let resultado = calcula_digito_pis(cpf);
+        output.innerHTML += `CPF convertido para PIS: ${resultado}<br>`;
+        navigator.clipboard.writeText(resultado);
+      } else {
+        output.innerHTML += `O CPF ${cpf} não é válido... Tente outro CPF...<br>`;
+      }
+    } else {
+      output.innerHTML += `O CPF ${cpf} não é válido... Tente outro CPF...<br>`;
+    }
+  }
+
+  function calcula_digito_pis(cpf) {
+    cpf = Array.from(String(cpf), Number);
+
+    let pesos = [3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+
+    cpf = cpf.slice(0, -1);
+
+    pesos = pesos.slice(-cpf.length);
+
+    let total = cpf.reduce((sum, digito, index) => sum + digito * pesos[index], 0);
+
+    let resto = total % 11;
+
+    let digito_verificador = 11 - resto;
+
+    if (digito_verificador === 10 || digito_verificador === 11) {
+      digito_verificador = 0;
+    }
+
+    cpf.push(digito_verificador);
+
+    cpf = cpf.join("");
+
+    cpf = cpf.padStart(11, "0");
+
+    return cpf;
+  }
+</script>
+</body>
+</html>
