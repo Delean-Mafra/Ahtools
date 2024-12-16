@@ -1,0 +1,186 @@
+<!-- Desenvolvido por Delean Mafra | Todos os direitos reservados -->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+
+    <title>Outros</title>
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background: url('https://img.freepik.com/vetores-gratis/fundo-de-particulas-abstratas-tecnologia-realista_52683-33064.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #e0e0e0;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        .tab-buttons {
+            display: flex;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .tab-button {
+            padding: 10px;
+            background-color: #00bcd4;
+            color: black;
+            font-weight: bold;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .tab-button:hover {
+            background-color: #00acc1;
+        }
+
+        .active-tab {
+            background-color: #0097a7;
+        }
+
+        iframe {
+            width: 100%;
+            height: 1500px;
+            border: none;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        .blocked-content::after {
+            content: "Conteúdo não disponível.";
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+            font-weight: bold;
+            position: absolute;
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Copyright ©2024 | Delean Mafra, todos os direitos reservados.</p>
+
+    <!-- Botões das abas -->
+    <div class="tab-buttons">
+        <div class="tab-button" onclick="openTab('tab1')">Valida planilha CPF</div>
+        <div class="tab-button" onclick="openTab('tab8')">Valida planilha PIS</div>
+
+    </div>
+
+    <!-- Conteúdo das abas -->
+    <div id="tab1" class="tab">
+        <iframe src="valida_cpf.html"></iframe>
+    </div>
+    <div id="tab2" class="tab">
+        <iframe src="converte_cpf_pis.html"></iframe>
+    </div>
+    <div id="tab3" class="tab">
+        <iframe src="https://i9acao.com.br/integridadeemjogototvs/"></iframe>
+    </div>
+    <div id="tab4" class="tab">
+        <iframe src="https://www.ahgora.com.br/ajuda"></iframe>
+    </div>
+    <div id="tab5" class="tab">
+        <iframe src="port671.html"></iframe>
+    </div>
+    <div id="tab7" class="tab">
+        <iframe src="https://delean-mafra.github.io/json_func_csv/"></iframe>
+    </div>
+    <div id="tab8" class="tab">
+        <iframe src="valida_pis.html"></iframe>
+    </div>
+    <div id="tab9" class="tab">
+        <iframe id="iframe-tab9" src="https://sonodaponto.com.br/app/calculadoradehoras/" class="blocked-content"></iframe>
+    </div>
+    <div id="tab10" class="tab">
+        <iframe src="outros.html"></iframe>
+    </div>
+
+    <script>
+        function openTab(tabId) {
+            const tabs = document.querySelectorAll('.tab');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            if (tabId === 'tab6') {
+                window.open("https://hf.co/chat/assistant/6675c8db66137c408a16fcaa", "_blank");
+                return;
+            }
+
+            tabs.forEach(tab => tab.style.display = 'none');
+            buttons.forEach(button => button.classList.remove('active-tab'));
+
+            const activeTab = document.getElementById(tabId);
+            if (activeTab) activeTab.style.display = 'block';
+
+            const activeButton = Array.from(buttons).find(button => button.textContent.trim() === tabId.replace('tab', ''));
+            if (activeButton) activeButton.classList.add('active-tab');
+
+            if (tabId === "tab9") {
+                blockContentInTab9();
+            }
+        }
+
+        function blockContentInTab9() {
+            const iframe = document.querySelector("#iframe-tab9");
+            iframe.addEventListener("load", () => {
+                try {
+                    const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                    const unwantedImage = iframeDocument.querySelector('img[src="img/gruposonoda.png"]');
+                    const unwantedLink = iframeDocument.querySelector('a[href="http://www.sonodaponto.com.br"]');
+
+                    if (unwantedImage) unwantedImage.remove();
+                    if (unwantedLink) unwantedLink.remove();
+                } catch (error) {
+                    console.warn("Não foi possível acessar o conteúdo do iframe. Problema de Same-Origin Policy.");
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            openTab('tab1');
+            const firstButton = document.querySelector('.tab-button');
+            if (firstButton) firstButton.classList.add('active-tab');
+        });
+    </script>
+
+    <script type="text/python">
+from browser import document, window
+
+def disable_right_click(event):
+    event.preventDefault()
+
+document.bind('contextmenu', disable_right_click)
+
+def disable_keys(event):
+    if event.keyCode in [123, 73, 67, 74, 85]:
+        print(f"Blocked key with code: {event.keyCode}")
+        event.preventDefault()
+
+window.bind('keydown', disable_keys)
+
+def disable_drag(event):
+    event.preventDefault()
+
+document.bind('dragstart', disable_drag)
+    </script>
+</body>
+</html>
