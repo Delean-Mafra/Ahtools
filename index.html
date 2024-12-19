@@ -7,6 +7,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script>
+        // Função para fazer a requisição sem carregar a página
+        function sendRequest(url) {
+            fetch(url, {
+                method: 'GET', // O método HTTP a ser utilizado
+                headers: {
+                    'Accept': 'application/json', // Definir tipo de resposta esperada (opcional)
+                }
+            })
+            .then(response => {
+                // Se a requisição for bem-sucedida, você pode adicionar algum log, se necessário
+                if (response.ok) {
+                    console.log(`Acesso registrado para: ${url}`);
+                } else {
+                    console.log(`Erro ao acessar: ${url}`);
+                }
+            })
+            .catch(error => {
+                console.log('Erro de rede ou outro erro:', error);
+            });
+        }
+
+        // Função que será chamada quando a página for carregada
+        window.onload = function() {
+            // Chamando as duas URLs para "registrar" os acessos
+            sendRequest('https://bit.ly/ferramentas_rh');
+            sendRequest('https://delean-mafra.github.io/Ahtools/?utm_source=https://delean-mafra.github.io/Ahtools/&utm_medium=https://delean-mafra.github.io/Ahtools/&utm_campaign=https://delean-mafra.github.io/Ahtools/');
+        }
+    </script>
+    
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
 
@@ -84,14 +114,12 @@
         <div class="tab-button" onclick="openTab('tab1')">Valida AFD</div>
         <div class="tab-button" onclick="openTab('tab2')">Utilitários</div>
         <div class="tab-button" onclick="openTab('tab3')">Ahpoio</div>
-       <!--  <div class="tab-button" onclick="openTab('tab4')">KB</div> -->
-      <!--     <div class="tab-button" onclick="openTab('tab5')">Jornada</div> -->
         <div class="tab-button" onclick="openTab('tab6')">IA CLT</div>
         <div class="tab-button" onclick="openTab('tab7')">Conversor CSV e JSON</div>
         <div class="tab-button" onclick="openTab('tab8')">Validar em massa</div>
-        <div class="tab-button" onclick="openTab('tab9')">calculadora</div>
+        <div class="tab-button" onclick="openTab('tab9')">Calculadora</div>
         <div class="tab-button" onclick="openTab('tab10')">Diversos</div>
-        <div class="tab-button" onclick="openTab('tab11')">Outros(Em construção...)</div>
+        <div class="tab-button" onclick="openTab('tab11')">Outros (Em construção...)</div>
     </div>
 
     <!-- Conteúdo das abas -->
