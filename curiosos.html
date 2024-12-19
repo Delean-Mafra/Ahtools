@@ -119,6 +119,29 @@
     <div id="tab9" class="tab">
         <iframe id="iframe-tab9" src="https://www.imagetotext.info/br/imagem-em-texto" class="blocked-content"></iframe>
     </div>
+<script>
+        // Função para abrir a aba quando clicada
+        function openTab(tabId) {
+            var tab = document.getElementById(tabId);
+            tab.style.display = tab.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Função para ocultar a div de banner dentro do iframe após ele carregar
+        document.getElementById('iframe-tab9').onload = function() {
+            var iframe = document.getElementById('iframe-tab9');
+            var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+            // Verifica se o iframe está acessível e se a div com a classe 'banner-div' existe
+            var bannerDiv = iframeDocument.querySelector('.banner-div');
+            if (bannerDiv) {
+                bannerDiv.style.display = 'none';  // Esconde o banner
+            }
+        };
+    </script>
+
+
+
+    
     <div id="tab10" class="tab">
         <iframe src="outros.html"></iframe>
     </div>
