@@ -50,29 +50,29 @@
             background-color: #0097a7;
         }
 
+        /* Ajustes no iframe */
         iframe {
-            width: 100%;
-            height: 1500px;
+            width: 80%;  /* Ajusta a largura do iframe */
+            height: 600px; /* Ajusta a altura do iframe */
             border: none;
+            margin: 0 auto; /* Centraliza o iframe */
+            display: block;
+        }
+
+        /* Desabilita barras de rolagem */
+        iframe::-webkit-scrollbar {
+            display: none;
+        }
+
+        iframe {
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none; /* Firefox */
         }
 
         p {
             text-align: center;
         }
 
-        .blocked-content::after {
-            content: "Conteúdo não disponível.";
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: black;
-            font-weight: bold;
-            position: absolute;
-            z-index: 999;
-        }
     </style>
 </head>
 
@@ -83,36 +83,14 @@
     <div class="tab-buttons">
         <div class="tab-button" onclick="openTab('tab1')">Calculadora</div>
         <div class="tab-button" onclick="openTab('tab8')">Jornada</div>
-
     </div>
 
     <!-- Conteúdo das abas -->
     <div id="tab1" class="tab">
-        <iframe src="https://sonodaponto.com.br/app/calculadoradehoras/"></iframe>
-    </div>
-    <div id="tab2" class="tab">
-        <iframe src="converte_cpf_pis.html"></iframe>
-    </div>
-    <div id="tab3" class="tab">
-        <iframe src="https://i9acao.com.br/integridadeemjogototvs/"></iframe>
-    </div>
-    <div id="tab4" class="tab">
-        <iframe src="https://www.ahgora.com.br/ajuda"></iframe>
-    </div>
-    <div id="tab5" class="tab">
-        <iframe src="port671.html"></iframe>
-    </div>
-    <div id="tab7" class="tab">
-        <iframe src="https://delean-mafra.github.io/json_func_csv/"></iframe>
+        <iframe src="calc2.html" scrolling="no"></iframe>
     </div>
     <div id="tab8" class="tab">
-        <iframe src="Calculadora_Relogio_de_Ponto.html"></iframe>
-    </div>
-    <div id="tab9" class="tab">
-        <iframe id="iframe-tab9" src="https://sonodaponto.com.br/app/calculadoradehoras/" class="blocked-content"></iframe>
-    </div>
-    <div id="tab10" class="tab">
-        <iframe src="outros.html"></iframe>
+        <iframe src="Calculadora_Relogio_de_Ponto.html" scrolling="no"></iframe>
     </div>
 
     <script>
@@ -120,39 +98,14 @@
             const tabs = document.querySelectorAll('.tab');
             const buttons = document.querySelectorAll('.tab-button');
 
-            if (tabId === 'tab6') {
-                window.open("https://hf.co/chat/assistant/6675c8db66137c408a16fcaa", "_blank");
-                return;
-            }
-
             tabs.forEach(tab => tab.style.display = 'none');
             buttons.forEach(button => button.classList.remove('active-tab'));
 
             const activeTab = document.getElementById(tabId);
             if (activeTab) activeTab.style.display = 'block';
 
-            const activeButton = Array.from(buttons).find(button => button.textContent.trim() === tabId.replace('tab', ''));
+            const activeButton = Array.from(buttons).find(button => button.textContent.trim().toLowerCase() === tabId.replace('tab', '').toLowerCase());
             if (activeButton) activeButton.classList.add('active-tab');
-
-            if (tabId === "tab9") {
-                blockContentInTab9();
-            }
-        }
-
-        function blockContentInTab9() {
-            const iframe = document.querySelector("#iframe-tab9");
-            iframe.addEventListener("load", () => {
-                try {
-                    const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-                    const unwantedImage = iframeDocument.querySelector('img[src="img/gruposonoda.png"]');
-                    const unwantedLink = iframeDocument.querySelector('a[href="http://www.sonodaponto.com.br"]');
-
-                    if (unwantedImage) unwantedImage.remove();
-                    if (unwantedLink) unwantedLink.remove();
-                } catch (error) {
-                    console.warn("Não foi possível acessar o conteúdo do iframe. Problema de Same-Origin Policy.");
-                }
-            });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
