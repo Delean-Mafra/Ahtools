@@ -33,9 +33,35 @@
 
     </style>
 </head>
-<body>
+
+<body onload="brython()">
     <div class="iframe-container">
         <iframe src="https://sonodaponto.com.br/app/calculadoradehoras/" scrolling="no"></iframe>
     </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+
+    <script type="text/python">
+from browser import document, window
+
+def disable_right_click(event):
+    event.preventDefault()
+
+document.bind('contextmenu', disable_right_click)
+
+def disable_keys(event):
+    if event.keyCode in [123, 73, 67, 74, 85]:
+        print(f"Blocked key with code: {event.keyCode}")
+        event.preventDefault()
+
+window.bind('keydown', disable_keys)
+
+def disable_drag(event):
+    event.preventDefault()
+
+document.bind('dragstart', disable_drag)
+    </script>
+
 </body>
 </html>
