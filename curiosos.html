@@ -1,18 +1,13 @@
-<!-- Desenvolvido por Delean Mafra | Todos os direitos reservados -->
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <link rel="icon" href="favicon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
-
     <title>Outros</title>
+    <link rel="icon" href="favicon.png" type="image/png">
 
     <style>
+        /* Estilos gerais */
         body {
             font-family: 'Roboto', sans-serif;
             line-height: 1.6;
@@ -50,168 +45,131 @@
             background-color: #0097a7;
         }
 
-        iframe {
-            width: 100%;
-            height: 1500px;
-            border: none;
+        /* Estilos para o formulário de conversão de URL para PDF */
+        #tab6 {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        #url-input {
+            width: 75%;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #convert-button {
+            padding: 10px 20px;
+            background-color: #00bcd4;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            color: black;
+            cursor: pointer;
+        }
+
+        #convert-button:hover {
+            background-color: #0097a7;
+        }
+
+        #pdf-link {
+            margin-top: 20px;
+            display: none;
+            color: #00bcd4;
+            font-weight: bold;
         }
 
         p {
             text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
         }
 
-        .blocked-content::after {
-            content: "Conteúdo não disponível.";
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: black;
-            font-weight: bold;
-            position: absolute;
-            z-index: 999;
-        }
     </style>
 </head>
-
 <body>
+
     <p>Copyright ©2024 | Delean Mafra, todos os direitos reservados.</p>
 
     <!-- Botões das abas -->
     <div class="tab-buttons">
-        <div class="tab-button" onclick="openTab('tab1')">Calcular horas tecnicas</div>
+        <div class="tab-button" onclick="openTab('tab1')">Calcular horas técnicas</div>
         <div class="tab-button" onclick="openTab('tab2')">Converter CPF para PIS</div>
         <div class="tab-button" onclick="openTab('tab3')">Integridade em Jogo TOTVS</div>
         <div class="tab-button" onclick="openTab('tab4')">KB</div>
         <div class="tab-button" onclick="openTab('tab5')">Portaria 671</div>
+        <div class="tab-button" onclick="openTab('tab6')">Converte URL para PDF</div>
         <div class="tab-button" onclick="openTab('tab7')">Leitor de QRCODE</div>
-        <div class="tab-button" onclick="openTab('tab8')">Calendario</div>
-
-       <div class="tab-button" onclick="openTab('tab9')">Converter Imagem em Texto</div> 
-     <!--   <div class="tab-button" onclick="openTab('tab10')">Diversos</div> -->
-
+        <div class="tab-button" onclick="openTab('tab8')">Calendário</div>
+        <div class="tab-button" onclick="openTab('tab9')">Converter Imagem em Texto</div>
     </div>
 
     <!-- Conteúdo das abas -->
     <div id="tab1" class="tab">
-        <iframe src="Consultoria_de_Suporte.html"></iframe>
+        <iframe src="Consultoria_de_Suporte.html" style="width: 100%; height: 600px;"></iframe>
     </div>
     <div id="tab2" class="tab">
-        <iframe src="converte_cpf_pis.html"></iframe>
+        <iframe src="converte_cpf_pis.html" style="width: 100%; height: 600px;"></iframe>
     </div>
     <div id="tab3" class="tab">
-        <iframe src="https://i9acao.com.br/integridadeemjogototvs/"></iframe>
+        <iframe src="https://i9acao.com.br/integridadeemjogototvs/" style="width: 100%; height: 600px;"></iframe>
     </div>
     <div id="tab4" class="tab">
-        <iframe src="https://www.ahgora.com.br/ajuda"></iframe>
+        <iframe src="https://www.ahgora.com.br/ajuda" style="width: 100%; height: 600px;"></iframe>
     </div>
     <div id="tab5" class="tab">
-        <iframe src="port671.html"></iframe>
+        <iframe src="port671.html" style="width: 100%; height: 600px;"></iframe>
     </div>
+
+    <!-- Aba de converter URL para PDF -->
+    <div id="tab6" class="tab">
+        <h3>Converter URL para PDF</h3>
+        <input type="text" id="url-input" placeholder="Cole a URL aqui">
+        <button id="convert-button" onclick="convertToPDF()">Gerar PDF</button>
+        <div id="pdf-link">
+            <a href="#" id="download-link" target="_blank">Clique aqui para baixar o PDF</a>
+        </div>
+    </div>
+
     <div id="tab7" class="tab">
-        <iframe src="https://pageloot.com/pt/qr-code-scanner/#google_vignette"></iframe>
+        <iframe src="https://pageloot.com/pt/qr-code-scanner/#google_vignette" style="width: 100%; height: 600px;"></iframe>
     </div>
     <div id="tab8" class="tab">
-        <iframe src="https://www.topster.pt/calendario/zeitrechner.php"></iframe>
+        <iframe src="https://www.topster.pt/calendario/zeitrechner.php" style="width: 100%; height: 600px;"></iframe>
     </div>
     <div id="tab9" class="tab">
-        <iframe id="iframe-tab9" src="https://www.imagetotext.info/br/imagem-em-texto" class="blocked-content"></iframe>
-    </div>
-<script>
-        // Função para abrir a aba quando clicada
-        function openTab(tabId) {
-            var tab = document.getElementById(tabId);
-            tab.style.display = tab.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // Função para ocultar a div de banner dentro do iframe após ele carregar
-        document.getElementById('iframe-tab9').onload = function() {
-            var iframe = document.getElementById('iframe-tab9');
-            var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-
-            // Verifica se o iframe está acessível e se a div com a classe 'banner-div' existe
-            var bannerDiv = iframeDocument.querySelector('.banner-div');
-            if (bannerDiv) {
-                bannerDiv.style.display = 'none';  // Esconde o banner
-            }
-        };
-    </script>
-
-
-
-    
-    <div id="tab10" class="tab">
-        <iframe src="outros.html"></iframe>
+        <iframe src="https://www.imagetotext.info/br/imagem-em-texto" style="width: 100%; height: 600px;"></iframe>
     </div>
 
     <script>
+        // Função para abrir a aba quando clicada
         function openTab(tabId) {
-            const tabs = document.querySelectorAll('.tab');
-            const buttons = document.querySelectorAll('.tab-button');
-
-            if (tabId === 'tab6') {
-                window.open("https://hf.co/chat/assistant/6675c8db66137c408a16fcaa", "_blank");
-                return;
-            }
-
-            tabs.forEach(tab => tab.style.display = 'none');
-            buttons.forEach(button => button.classList.remove('active-tab'));
-
-            const activeTab = document.getElementById(tabId);
-            if (activeTab) activeTab.style.display = 'block';
-
-            const activeButton = Array.from(buttons).find(button => button.textContent.trim() === tabId.replace('tab', ''));
-            if (activeButton) activeButton.classList.add('active-tab');
-
-            if (tabId === "tab9") {
-                blockContentInTab9();
-            }
-        }
-
-        function blockContentInTab9() {
-            const iframe = document.querySelector("#iframe-tab9");
-            iframe.addEventListener("load", () => {
-                try {
-                    const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-                    const unwantedImage = iframeDocument.querySelector('img[src="img/gruposonoda.png"]');
-                    const unwantedLink = iframeDocument.querySelector('a[href="http://www.sonodaponto.com.br"]');
-
-                    if (unwantedImage) unwantedImage.remove();
-                    if (unwantedLink) unwantedLink.remove();
-                } catch (error) {
-                    console.warn("Não foi possível acessar o conteúdo do iframe. Problema de Same-Origin Policy.");
-                }
+            var tabs = document.querySelectorAll('.tab');
+            tabs.forEach(function(tab) {
+                tab.style.display = 'none'; // Oculta todas as abas
             });
+            var activeTab = document.getElementById(tabId);
+            activeTab.style.display = 'block'; // Exibe a aba selecionada
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            openTab('tab1');
-            const firstButton = document.querySelector('.tab-button');
-            if (firstButton) firstButton.classList.add('active-tab');
-        });
+        // Função para converter URL para PDF
+        function convertToPDF() {
+            var url = document.getElementById("url-input").value;
+            if (url) {
+                // Alterar a URL do PDFmyURL para incluir o link fornecido
+                var pdfUrl = "https://pdfmyurl.com/?url=" + encodeURIComponent(url);
+
+                // Exibe o link para o PDF gerado
+                document.getElementById("download-link").href = pdfUrl;
+                document.getElementById("pdf-link").style.display = "block";
+            } else {
+                alert("Por favor, insira uma URL válida.");
+            }
+        }
     </script>
 
-    <script type="text/python">
-from browser import document, window
-
-def disable_right_click(event):
-    event.preventDefault()
-
-document.bind('contextmenu', disable_right_click)
-
-def disable_keys(event):
-    if event.keyCode in [123, 73, 67, 74, 85]:
-        print(f"Blocked key with code: {event.keyCode}")
-        event.preventDefault()
-
-window.bind('keydown', disable_keys)
-
-def disable_drag(event):
-    event.preventDefault()
-
-document.bind('dragstart', disable_drag)
-    </script>
 </body>
 </html>
