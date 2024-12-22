@@ -1,0 +1,224 @@
+/* CSS Document */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    color: #E0FFFF; /* Ciano claro */
+    font: 15px Tahoma, Arial, sans-serif;
+    background-color: #1A1A1A; /* Fundo escuro para contraste */
+}
+
+ul {
+    list-style-type: none;
+}
+
+.wrap {
+    width: 885px;
+    margin: 0px auto;
+}
+
+.container {
+    background: #0A1D2D url(../images/form_bg.jpg) repeat-x top; /* Azul escuro */
+}
+
+.left, .right {
+    background: url(../images/form_bgleft.jpg) repeat-y left;
+}
+
+.right {
+    padding-left: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+#msgs {
+    color: #FF5733; /* Laranja Neon para mensagens de erro */
+    position: absolute;
+    right: 15px;
+    top: 5px;
+    display: none;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.inputbox {
+    width: 60px;
+    height: 21px;
+    line-height: 21px;
+}
+
+/* Estilo futurista para os campos */
+.yellow_inputbox {
+    border: 1px solid #00FFFF; /* Azul Ciano Neon */
+    background: #1A1A1A;
+    color: #00FFFF;
+    font-size: 14px;
+    text-align: center;
+}
+
+option {
+    color: #00FFFF; /* Azul Ciano Neon */
+}
+
+.selectbox {
+    width: 48px;
+    padding: 2px;
+    border: 1px solid #00FFFF;
+    background: #1A1A1A;
+    border-radius: 2px;
+    color: #00FFFF;
+}
+
+.lineTarget {
+    width: 95%;
+    background: url(../images/table-color-bg.png) no-repeat left bottom;
+    margin: 0 auto 5px;
+}
+
+.lineTarget th span {
+    padding: 5px;
+    background-color: #00FFFF; /* Azul Ciano Neon para os cabeçalhos */
+}
+
+.lineTarget td {
+    line-height: 20px;
+    color: #FFFFFF; /* Texto branco para as células */
+}
+
+.gray_inputbox {
+    border: 1px solid #00FFFF; /* Azul Ciano Neon */
+    background: #333333; /* Fundo escuro */
+    width: 58px;
+    text-align: center;
+    font-size: 14px;
+    color: #00FFFF;
+}
+
+.listNum {
+    background: url(../images/list_bg.gif) no-repeat center top;
+    width: 27px;
+    text-align: center;
+    color: #00FFFF; /* Azul Ciano Neon */
+    height: 20px;
+}
+
+.totals {
+    text-align: left;
+    margin: 3px 0px;
+    color: #00FFFF;
+}
+
+.enter {
+    width: 67px;
+    height: 21px;
+    line-height: 21px;
+}
+
+.support {
+    text-align: center;
+    margin-right: 5px;
+    color: #00FFFF; /* Azul Ciano Neon */
+}
+
+.grand {
+    width: 21px;
+}
+
+#enter_time {
+    margin: 3px 0 0;
+}
+
+a {
+    color: #00FFFF; /* Azul Ciano Neon */
+    text-decoration: underline;
+}
+
+.rows {
+    display: none;
+}
+
+.rows span {
+    cursor: pointer;
+    display: none;
+    color: #00FFFF; /* Azul Ciano Neon */
+}
+
+#msg {
+    color: #FF5733; /* Laranja Neon */
+    font: bold 12px verdana;
+}
+
+#email {
+    width: 130px;
+    *width: 115px;
+}
+
+#outBox {
+    position: relative;
+}
+
+#emailBox {
+    position: absolute;
+    top: -75px;
+    right: 5px;
+    background: #111;
+    border: 1px solid #00FFFF; /* Azul Ciano Neon */
+    display: none;
+    width: 292px;
+    height: 75px;
+}
+
+#emailBox input, #emailBox textarea {
+    border: 1px solid #00FFFF; /* Azul Ciano Neon */
+}
+
+#emailBox textarea {
+    width: 200px;
+    height: 58px;
+    *height: 48px;
+}
+
+.submitSendEmail, .cancelSend {
+    font-size: 12px;
+    color: #00FFFF; /* Azul Ciano Neon */
+}
+
+.emailButtons {
+    text-align: center;
+}
+
+#printArea {
+    /*text-align: center;*/
+}
+
+.weekof {
+    font-size: 12px;
+    font-weight: bold;
+    margin: 15px 5px 10px;
+    color: #00FFFF;
+}
+
+.weekof input {
+    width: 20px;
+    text-align: center;
+}
+
+div.btn {
+    background: url(../images/btn-bg.png) no-repeat center top;
+    width: 98px;
+    height: 33px;
+    line-height: 33px;
+    text-align: center;
+    color: #00FFFF; /* Azul Ciano Neon */
+}
+
+/* Estilo do footer */
+footer {
+    color: #00FFFF; /* Azul Ciano Neon */
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 0;
+}
