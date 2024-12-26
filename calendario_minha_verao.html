@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Tempo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="date"], input[type="time"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculadora de Tempo</h1>
+    <div class="container">
+        <label for="start-date">Data de Início:</label>
+        <input type="date" id="start-date">
+        <label for="start-time">Hora de Início:</label>
+        <input type="time" id="start-time">
+        <label for="end-date">Data de Fim:</label>
+        <input type="date" id="end-date">
+        <label for="end-time">Hora de Fim:</label>
+        <input type="time" id="end-time">
+        <button onclick="calculateTime()">Calcular</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculateTime() {
+            const startDate = document.getElementById('start-date').value;
+            const startTime = document.getElementById('start-time').value;
+            const endDate = document.getElementById('end-date').value;
+            const endTime = document.getElementById('end-time').value;
+
+            if (!startDate || !startTime || !endDate || !endTime) {
+                alert('Por favor, preencha todas as datas e horas.');
+                return;
+            }
+
+            const startDateTime = new Date(`${startDate}T${startTime}`);
+            const endDateTime = new Date(`${endDate}T${endTime}`);
+
+            if (endDateTime <= startDateTime) {
+                alert('A data e hora de fim devem ser posteriores à data e hora de início.');
+                return;
+            }
+
+            const diffInMs = endDateTime - startDateTime;
+            const diffInSec = diffInMs / 1000;
+            const diffInMin = diffInSec / 60;
+            const diffInHours = diffInMin / 60;
+            const diffInDays = diffInHours / 24;
+            const diffInWeeks = Math.floor(diffInDays / 7);
+            const remainingDays = Math.floor(diffInDays % 7);  // Dias extras que não completam uma semana
+            const diffInMonths = diffInDays / 30.4369; // Média de dias por mês
+            const diffInYears = diffInDays / 365.25; // Média de dias por ano
+
+            const result = `
+                <strong>Resultado:</strong><br>
+                ${Math.floor(diffInYears)} anos<br>
+                ${Math.floor(diffInMonths)} meses<br>
+                ${diffInWeeks} semanas, ${remainingDays} dias<br>
+                ${Math.floor(diffInDays)} dias<br>
+                ${Math.floor(diffInHours)} horas<br>
+                ${Math.floor(diffInMin)} minutos<br>
+                ${Math.floor(diffInSec)} segundos
+            `;
+            document.getElementById('result').innerHTML = result;
+        }
+    </script>
+</body>
+</html>
