@@ -8,7 +8,31 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script> <!-- Inclusão do Tesseract.js -->
+<script type="text/python">
+    from browser import document, window
+    
+    def disable_right_click(event):
+        event.preventDefault()
+    
+    document.bind('contextmenu', disable_right_click)
+    
+    def disable_keys(event):
+        if event.keyCode in [123, 73, 67, 74, 85]:
+            print(f"Blocked key with code: {event.keyCode}")
+            event.preventDefault()
+    
+    window.bind('keydown', disable_keys)
+    
+    def disable_drag(event):
+        event.preventDefault()
+    
+    document.bind('dragstart', disable_drag)
+        </script>
 
+
+	
   <style>
     /* Estilo para o corpo */
     body {
