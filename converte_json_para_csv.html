@@ -8,12 +8,12 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: #000000;
         }
         .container {
             max-width: 600px;
             margin: auto;
-            background: white;
+            background: rgb(12, 76, 105);
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -50,6 +50,30 @@
             margin-top: 10px;
         }
     </style>
+
+<script src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script> <!-- Inclusão do Tesseract.js -->
+<script type="text/python">
+    from browser import document, window
+    
+    def disable_right_click(event):
+        event.preventDefault()
+    
+    document.bind('contextmenu', disable_right_click)
+    
+    def disable_keys(event):
+        if event.keyCode in [123, 73, 67, 74, 85]:
+            print(f"Blocked key with code: {event.keyCode}")
+            event.preventDefault()
+    
+    window.bind('keydown', disable_keys)
+    
+    def disable_drag(event):
+        event.preventDefault()
+    
+    document.bind('dragstart', disable_drag)
+        </script>
+
 </head>
 <body>
 
