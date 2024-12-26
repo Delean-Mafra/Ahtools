@@ -1,1124 +1,301 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador e Validador de CPF e PIS</title>
-
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-  <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script> <!-- Inclusão do Tesseract.js -->
-<script type="text/python">
-    from browser import document, window
-    
-    def disable_right_click(event):
-        event.preventDefault()
-    
-    document.bind('contextmenu', disable_right_click)
-    
-    def disable_keys(event):
-        if event.keyCode in [123, 73, 67, 74, 85]:
-            print(f"Blocked key with code: {event.keyCode}")
-            event.preventDefault()
-    
-    window.bind('keydown', disable_keys)
-    
-    def disable_drag(event):
-        event.preventDefault()
-    
-    document.bind('dragstart', disable_drag)
-        </script>
-
-
-	
-  <style>
-    /* Estilo para o corpo */
-    body {
-      background-color: #0a3d62;
-      color: #fff;
-      font-family: Arial, sans-serif;
-    }
-
-    /* Estilo do container */
-    .container {
-      width: 80%;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #0b1e2b;
-      border-radius: 10px;
-      box-shadow: 0px 0px 20px rgba(0,0,0,0.6);
-    }
-
-    /* Título */
-    h1, h2, label {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    /* Estilo dos campos de input */
-    input[type="number"], input[type="text"] {
-      padding: 5px;
-      border-radius: 5px;
-      border: none;
-      background-color: #f1f1f1;
-      margin-bottom: 10px;
-      color: #333;
-    }
-
-    /* Botões */
-    button {
-      padding: 10px;
-      border-radius: 5px;
-      border: none;
-      background-color: #2ecc71;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-
-    /* Resultado */
-    .resultado {
-      padding: 20px;
-      background-color: #16a085;
-      border-radius: 5px;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-    }
-
-    /* Estilo para as abas */
-    #tabs {
-      width: 100%;
-      max-width: 1600px;
-      margin: 0 auto;
-      height: auto;
-    }
-
-    /* Estilo para a navegação das abas */
-    .ui-tabs-nav {
-      display: flex;
-      justify-content: center;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .ui-tabs-nav li {
-      margin: 5px;
-    }
-
-    .ui-tabs-nav li a {
-      display: block;
-      padding: 10px 20px;
-      background-color: #b9cd6d;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 5px 5px 0 0;
-      font-weight: bold;
-    }
-
-    /* Estilo para a aba ativa */
-    .ui-tabs-nav li.ui-state-active a {
-      background-color: #4CAF50; /* Cor verde mais escura para a aba ativa */
-    }
-
-    /* Estilo do conteúdo da aba */
-    .ui-tabs-panel {
-      background-color: #f4f4f4;
-      padding: 20px;
-      border-radius: 0 0 5px 5px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Responsividade para telas pequenas */
-    @media screen and (max-width: 768px) {
-      #tabs {
-        padding: 10px;
-      }
-
-      .ui-tabs-nav {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .ui-tabs-nav li {
-        margin: 5px;
-      }
-
-      .ui-tabs-nav li a {
-        font-size: 14px;
-        padding: 8px 15px;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <h1><strong>Gerador e validador de CPF e PIS</strong></h1>
-
-    <label for="pis">Digite o número do PIS:</label>
-    <input id="pis" type="text" />
-    <button onclick="validarPIS()">Validar PIS</button><br />
-
-    <label for="gerarCpfQuantidade">Quantidade de CPF/PIS:</label>
-    <input id="gerarCpfQuantidade" type="number" value="1" max="10" min="1" /><br /><br />
-
-    <button onclick="gerarCpf()">Gerar CPF/PIS</button>
-    <button onclick="validarCpfPis()">Validar CPF</button>
-    <input id="validarCpfPisInput" type="text" onblur="limparPontuacao()" spellcheck="false">
-
-    <div class="resultado" id="resultado"></div>
-  </div>
-
-  <div id="tabs">
-    <ul>
-      <li><a href="#tabs-1">Datas</a></li>
-      <li><a href="#tabs-2">Nomes</a></li>
-      <li><a href="#tabs-3">CNPJ</a></li>
-      <li><a href="#tabs-4">Matric</a></li>
-      <li><a href="#tabs-5">AFD fictício</a></li>
-      <li><a href="#tabs-6">Calc. jornada</a></li>
-      <li><a href="#tabs-7">Removedor de pontos</a></li>
-      <li><a href="#tabs-8">Sorteador</a></li>
-      <li><a href="#tabs-9">Calc HE</a></li>
-      <li><a href="#tabs-10">Informações</a></li>
-    </ul>
-  <div id="tabs-1">
-    <head>
-  <title>Gerador de Datas</title>
-</head>
-<body>
-  <button onclick="gerarData()">Gerar Data</button>
-  <p id="dataGerada"></p>
-<script src="script3.js"></script>
-
-</body>
-</html>
-      <html>
-<head>
-  <title>Gerador de Nomes</title>
-</head>
-  </div>
-  <div id="tabs-2">
-     <html>
-<head>
-  <title>Gerador de Nomes</title>
-</head>
-<body>
-  <button onclick="gerarNome()">Gerar Nome</button>
-  <p id="nomeGerado"></p>
-<script src="script4.js"></script>
-
-</body>
-</html>
-  </div>
-  <div id="tabs-3">
-<html>
-<head>
-    <title>Gerador de CNPJ</title>
-<script src="script5.js"></script>
-
-</head>
-<body>
-    <h1>Gerador de CNPJ</h1>
-    <button onclick="gerarCNPJ()">Gerar CNPJ</button>
-    <p id="cnpj"></p>
-</body>
-</html>
-  </div>
-  <div id="tabs-4">
-<html>
-<head>
-<style>
-  .titulo {
-    font-size: 10x; /* Tamanho da fonte desejado */
-    margin-bottom: 50px; /* Ajuste o espaçamento abaixo do título */
-    text-align: center;  /* Centraliza o título */
-    font-weight: bold;  /* Torna o título em negrito */
-  }
-</style>
-<script src="script6.js"></script>
-</head>
-<body>
-  <h4>Gerador de Número de Matrícula</h4>
-  <button onclick="exibirMatricula()">Gerar Matrícula</button>
-  <p>Número de Matrícula: <span id="matricula"></span></p>
-</body>
-</html>
-  </div>
-  <div id="tabs-5">
-<!DOCTYPE html>
-<html lang="br-pt">
-<head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="AfdTittle">Gerador de AFD</title>
+    <title>Gerador e Validador de CPF e PIS</title>
 
-    <link rel="stylesheet" type="text/css" href="html{
-    margin: 0;
-    padding: 0;
-}
-body{
-    margin: 0;
-    padding: 0;
-}
-.head{
-    display: block;
-    width: 60%;
-    text-align: center;
-}
-.body{
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center
-}
-.nav{
-    border: solid 1px #ccc;
-    border-radius: 4px;
-    padding: 5px;
-    width: 60%;
-    min-width: 830px;
-    min-height: 230px;
-    background-color: rgb(231, 231, 231);
-    display: block;
-    height: 80%;
-    box-shadow: inset 0 0 1em rgb(231, 231, 231), 0 0 0.4em rgb(51, 51, 51);
-    
-}
-.periodo{
-    display: inline-block;
-    margin-top: 2%;
-}
-input{
-    margin-bottom: 2%;
-    border: solid #ccc;
-    border-radius: 4px;
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script>
 
-}
-input:hover{
-    border: solid 1px black;
-    border-radius: 4px;
-}
-textarea{
-    border-radius: 4px;
-}
-textarea:hover{
-    border: solid 1px black;
-    border-radius: 4px;
-}
-.pis{
-    display: block;
-    margin-top: 2%;
-}
-.pisc{
-    font-size: 15px;
-    height: 15px;
-    min-height: 20px;
-    max-width: 98%;
-    max-height: 10%;
-    margin-bottom: 1%;
-    width: 396px;
-}
-label,h1,input{
-    font-family: Arial, Helvetica, sans-serif;
-    color: rgb(44, 44, 44);
-}
+    <style>
+        /* Estilo para o corpo */
+        body {
+            background-color: #0a3d62;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
 
-label{
-    margin-left: 3%;
-}
-.batidac{
-    margin-left: 3%;
-    width: 85px;
-}
+        /* Estilo do container */
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #0b1e2b;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.6);
+        }
 
-h1,p{
-    display: block;
-}
-label{
-    font-size: 20px;
-}
-input, textarea{
-    font-size: 18px;
-    border-radius: 2px;
-    border: solid 1px rgb(126, 124, 124);
-}
+        /* Título */
+        h1, h2, label {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
 
-.gerar{
-    color: white;
-    background-color: rgb(66, 65, 65);
-    height: 50px;
-    width: 110px;
-    border-radius: 25px;
-    border: solid 1px;
-    margin-bottom: 2%;
-    margin-top: 1%;
+        /* Estilo dos campos de input */
+        input[type="number"], input[type="text"] {
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: #f1f1f1;
+            margin-bottom: 10px;
+            color: #333;
+        }
 
-}
-.divbutton{
-    text-align: center;
-}
-.gerar:hover{
-    border: solid 1px rgb(66, 66, 66);
-    background-color: rgb(46, 46, 46);
-    width: 150px;
-    transition-duration: 350ms;
-    
-}
-.gerar:active{
-    border: solid 1px black;
-    background: linear-gradient(0.25turn, rgb(36, 36, 36), rgb(88, 88, 88));
-    transition-duration: 10ms;
-}
-h1{
-    display: inline-block;
-    color: rgb(77, 77, 77);
-}
-.img{
-    margin-left: 1%;
-}
-#resultado{
-    width: 60%;
-    max-width: 60%; 
-    color: rgb(255, 255, 255)
-}
-#tutorial{
-    font-family: Arial, Helvetica, sans-serif;
-    margin-left: 85%;
-    overflow: hidden;
-    color: black;
-    font-size: 14px;
-    background-color: rgb(238, 62, 62);
-    border-radius: 4px;
-    border: solid 1px rgb(238, 62, 62);
-    margin-top: 1%;
-    margin-bottom: -5%;
-    padding: 7px;
-    width: 65px;
-}
-#tutorial:hover{
-    box-shadow: inset 0 0 0em rgb(0, 0, 0), 0 0 0.2em rgb(51, 51, 51);
-}
-#tutorial:active{
-    box-shadow: inset 0 0 0em rgb(240, 103, 103), 0 0 0.5em rgb(51, 51, 51);
-    
-}
-.msgs{
-    width: 270px;
-    height: 10px;
-    padding: 1%;
-    position: absolute;
-    margin-left: 10%;
-    margin-top: 4%;
-    background-color: rgba(245, 46, 46, 0.877);
-    border-radius:  1px 8px  8px ; 
-    font-size: 15px;
-    color: black;
-    visibility: hidden;
-    padding-top: 1px;
-    padding-bottom: 43px;
-}
-.msgs:hover{
-    background-color: rgba(233, 53, 53, 0.993)
-}
-#textoSabado{
-    position: relative;;
-    width: 250px ;
-    margin-left: -260px;
+        /* Botões */
+        button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #2ecc71;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
 
-}
-#closes{
-    background-color: transparent;
-    border: transparent;
-    font-size: 15px;
-}
-#closes:hover{
-    color: white;
-}
-#closes:active{
-    color: black;
-}
-.btns{
-    position: absolute;
-    width: 20px;
-    height: 40px;
-    margin-left: 87%;
- 
-}
-.msgd{
-    width: 270px;
-    height: 25px;
-    padding: 1%;
-    position: absolute;
-    margin-left: 10%;
-    margin-top: 4%;
-    background-color: rgba(245, 46, 46, 0.877);
-    border-radius:  1px 8px  8px ; 
-    font-size: 15px;
-    color: black;
-    visibility: hidden;
-    padding-top: 3px;
-    z-index: 0;
-}
-.msgd:hover{
-    background-color: rgba(233, 53, 53, 0.993)
-}
-#closed{
-    background-color: transparent;
-    border: transparent;
-    font-size: 15px;
-}
-#closed:hover{
-    color: white;
-}
-#closed:active{
-    color: black;
-}
-.btnd{
-    position: absolute;
-    width: 20px;
-    height: 40px;
-    margin-left: 87%;
- 
-}
-.header{
-    background-color: rgb(0, 0, 0);
-    position: fixed;
-    display: inline-block;
-    width: 100%;
-    height: 50px;
-}
-#h1Header{
-    margin-left: 3%;
-}
-.abas{
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: medium;
-}
-.titulo{
-    position: fixed;
-    display: inline-block;
-    height: 50px;
-    width: 200px;
-}
-#GeradorAfd{
-    position: fixed;
-    display: inline-block;
-    height: 47px;
-    width: 180px;
-    margin-left: 16%;
-    border: solid 0px rgb(0, 131, 192);
-    border-bottom-width: 3px hidden;
-}
-#GeradorAfd p{
-    color: white;
-}
-#GeradorAfd p:hover{
-    color: rgb(0, 131, 192);
-}
-#ValidadorHolerite{
-    position: fixed;
-    display: inline-block;
-    height: 47px;
-    width: 180px;
-    margin-left: 42%;
-    border: solid 0px rgb(0, 131, 192);
-    border-bottom-width: 3px hidden;
-    color: white;
-}
-#ValidadorHolerite p{
-    color:white;
-}
-#ValidadorHolerite p:hover{
-    color: rgb(0, 131, 192);
-    
-}
-#GeradorHolerite{
-    color: white;
-    position: fixed;
-    display: inline-block;
-    height: 47px;
-    width: 180px;
-    margin-left: 70%;
-    border: solid 0px rgb(0, 131, 192);
-    border-bottom-width: 3px hidden;
+        /* Resultado */
+        .resultado {
+            padding: 20px;
+            background-color: #16a085;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+        }
 
+        /* Estilo para as abas */
+        #tabs {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            height: auto;
+        }
 
-}
-.teste{
-    text-align: center;
-}
-#soapKey{
+        /* Estilo para a navegação das abas */
+        .ui-tabs-nav {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
 
-    font-size: medium;
-    letter-spacing: 1px;
-    font-family: Arial, Helvetica, sans-serif;
-    color: white;
-    border-radius: 4px;
-    border: solid 1px green;
-    padding: 5px;
-    margin-top: 3%;
-    margin-bottom: 3%;
-    background-color: rgb(9, 180, 9);
-    width: 120px;
-    height: 35px;
-}
-#soapKey:hover{
-    background-color: rgb(0, 161, 0);
-}
-#soapKey:active{
-    background-color: rgb(0, 122, 0);
-}
-#file-input{
-    margin-top: 3%;
-    margin-left: 3%;
-    border: 0px;
-}
+        .ui-tabs-nav li {
+            margin: 5px;
+        }
 
-.holeriteinput{
-    display: inline-block;
-    margin-left: 3%;
-    width: 340px;
-    height: 20px;
-}
-.labelinput{
-    display: inline-block;
-}
-.labelinput>.holeriteinput{
-    margin-left: 0.1%;
-    display: inline-block;
-}
-#competencia{
-    width: 200px;
-    display: inline-block;
-}
-#toolTip{
-    color: white;
-    text-align: left;
-    display: inline-block;
-    border-radius: 100px;
-    border: solid 0px;
-    background-color: black;
-}
-#toolTip:active{
-    color: black;
-}
-#resultTool{
-    font-family: Arial, Helvetica, sans-serif;
-    border: solid 1px rgb(145, 145, 145);
-    border-radius: 0px 8px 8px 8px;
-    background-color: white;
-    position: fixed;
-    margin-left: 12%;
-    margin-top: 1%;
-    max-width: 360px ;
-    padding: 10px;
-    visibility: hidden;
-}
-#file-contents{
-    color: rgba(255, 255, 255, 0);
-}
-.error{
-    min-width: 800px;
-    max-width: 1500px;
-    max-height: 600px;
-}
-#result>p{
-    line-height: 25px;
-    font-family: Arial, Helvetica, sans-serif;
-    border-radius: 5px;
-    color: rgb(151, 0, 0);
-    background-color: rgba(255, 101, 101, 0.863);
-}
-">
+        .ui-tabs-nav li a {
+            display: block;
+            padding: 10px 20px;
+            background-color: #b9cd6d;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+        }
+
+        /* Estilo para a aba ativa */
+        .ui-tabs-nav li.ui-state-active a {
+            background-color: #4CAF50; /* Cor verde mais escura para a aba ativa */
+        }
+
+        /* Estilo do conteúdo da aba */
+        .ui-tabs-panel {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsividade para telas pequenas */
+        @media screen and (max-width: 768px) {
+            #tabs {
+                padding: 10px;
+            }
+
+            .ui-tabs-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .ui-tabs-nav li {
+                margin: 5px;
+            }
+
+            .ui-tabs-nav li a {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="header">
-        <div class="titulo">
+
+    <div class="container">
+        <h1><strong>Gerador e validador de CPF e PIS</strong></h1>
+
+        <label for="pis">Digite o número do PIS:</label>
+        <input id="pis" type="text" />
+        <button onclick="validarPIS()">Validar PIS</button><br />
+
+        <label for="gerarCpfQuantidade">Quantidade de CPF/PIS:</label>
+        <input id="gerarCpfQuantidade" type="number" value="1" max="10" min="1" /><br /><br />
+
+        <button onclick="gerarCpf()">Gerar CPF/PIS</button>
+        <button onclick="validarCpfPis()">Validar CPF</button>
+        <input id="validarCpfPisInput" type="text" onblur="limparPontuacao()" spellcheck="false">
+
+        <div class="resultado" id="resultado"></div>
+    </div>
+
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Datas</a></li>
+            <li><a href="#tabs-2">Nomes</a></li>
+            <li><a href="#tabs-3">CNPJ</a></li>
+            <li><a href="#tabs-4">Matric</a></li>
+            <li><a href="#tabs-5">AFD fictício</a></li>
+            <li><a href="#tabs-6">Calc. jornada</a></li>
+            <li><a href="#tabs-7">Removedor de pontos</a></li>
+            <li><a href="#tabs-8">Sorteador</a></li>
+            <li><a href="#tabs-9">Calc HE</a></li>
+            <li><a href="#tabs-10">Informações</a></li>
+        </ul>
+        <div id="tabs-1">
+            <h2>Gerador de Datas</h2>
+            <button onclick="gerarData()">Gerar Data</button>
+            <p id="dataGerada"></p>
+            <script src="script3.js"></script>
         </div>
-        <a href="/">
-            <div class="abas" id="GeradorAfd">                
-            </div>  
-        </a>
-            <a href="ValidadorHolerite">
-            <div class="abas" id="ValidadorHolerite" onclick="abaHolerite()">
-            </div>
-        </a>
-        <a href="GeradorHolerite">
-            <div class="abas" id="GeradorHolerite">
-            </div>
-        </a>
-    </div>
-</br>
-</br>
-</br>
-<div class="body"><br>
-    <div class="head"> 
-    </div>
-</br>
-   <div id="nav" class="nav">
-       <form action="https://drive.google.com/file/d/1avb22mwEn00ZCfsCFNr85EDQ6CE3Xc0K/view?usp=sharing" target="_blank">
-            </button>
-        </form>
-    <div id="msgs" class="msgs">
-        <div class="btns">
+        <div id="tabs-2">
+            <h2>Gerador de Nomes</h2>
+            <button onclick="gerarNome()">Gerar Nome</button>
+            <p id="nomeGerado"></p>
+            <script src="script4.js"></script>
         </div>
-    </div>
-    <div id="msgd" class="msgd">
-        <div class="btnd">         
-        </div>        
-    </div>
-        <label class="periodo">
-            Periodo Inicial<br>
-            <input id="dataInicial" class="inputp" name="data" onchange="ignoraweek()" type="date" value="" tittle="Periodo inicial">
-        </label>
-        <label class="periodo">
-            Periodo Final<br>
-            <input id="dataFinal" class="inputp" name="data" type="date" value="" tittle="Periodo final">
-        </label>
-        <label class="pis">
-            Pis<br>
-            <textarea id="pisColaborador" class="pisc" name="pis" value=""
-            placeholder="Insira o PIS(separado por virgula)" rows="5" cols="33"></textarea>
-        </label>
-        <label id= "batidasAll" class="batidas">
-            Batidas<br>
-            <input id="batida1" class="batidac"  name="batida" type="time">
-            <input id="batida2" class="batidac"  name="batida" type="time">
-            <input id="batida3" class="batidac"  name="batida" type="time">
-            <input id="batida4" class="batidac"  name="batida" type="time">
-        </label>
-        <br>
-        <label>Batidas aleatórias
-            <input id="aleatorio" class="aleatorio" onclick="checkValidacao(event)" name="aleatorio" type="checkbox">
-        </label>
-        <label id="saturday">Ignora Sábados
-            <input id="sabado" class="domingo" onclick="sabado()" name="aleatorio" type="checkbox" disabled>
-        </label>
-        <label id="sunday">Ignora Domingos
-            <input id="domingo" class="sabado" onclick="domingo()" name="aleatorio" type="checkbox" disabled>
-        </label>
-        <div class="divbutton">
-            <button id="gerarAfd" class="gerar" name="gerar" onclick="valueNumber(event)">Gerar AFD</button>
-        </div>        
-    </div>
-    <div id="resultado" style="display: block;">
-    <br>        
-    </div>
-</div>
-<script src="script7.js"></script>
-</body>
-<h1>Copyright ©2023 - Joarle Mafra - ALL RIGHTS RESERVED<h1/>
-</html>
-  </div>
-  <div id="tabs-6">
-    <p><!DOCTYPE html>
-<html>
-<head>
-    <title>Calculadora de Relógio de Ponto</title>
-</head>
-<body>
-    <h1>Calculadora de Relógio de Ponto</h1>
-    <form id="timeForm">
-        <label for="startTime">Hora de Início:</label>
-        <input type="time" id="startTime" name="startTime"><br><br>
-        <label for="lunchStart">Início do Almoço:</label>
-        <input type="time" id="lunchStart" name="lunchStart"><br><br>
-        <label for="lunchEnd">Término do Almoço:</label>
-        <input type="time" id="lunchEnd" name="lunchEnd"><br><br>
-        <label for="endTime">Hora de Término:</label>
-        <input type="time" id="endTime" name="endTime"><br><br>
-        <input type="submit" value="Calcular">
-    </form> 
-    <p id="result"></p>
-
-<script src="script8.js"></script>
-
-</body>
-</html>
-
-<div id="resultado"></div>
-
-<script src="script9.js"></script>
-
-</p>
-
-  </div>
-  <div id="tabs-7">
-<h1>Copyright ©2023 - Erick Henrique- ALL RIGHTS RESERVED<h1/>
-    <head>
-          <meta charset="UTF-8">
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Pis</title>
-          <style>
-              
-              body{
-                  font: normal 20pt Arial;
-              }
-          </style>
-      </head>
-      <body>
-      
-          <input type="text" name="texto" id="texto" placeholder="Digite um PIS, CPF ou CNPJ" />
-          <button onclick="copiarTexto()">Copiar</button>
-          
-      <script>
-      function copiarTexto() {
-          var pis = document.getElementById("texto").value; 
-          pis = pis.replaceAll(".", "").replaceAll("-", "").replaceAll(":", "").replaceAll(" ", "").replaceAll("/", "");
-          navigator.clipboard.writeText(pis); 
-          alert("Texto copiado para a área de transferência!"); 
-      }
-      </script>
-      </body> 
-      </html><!DOCTYPE html>
-  </div>
-<div id="tabs-8">
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Sorteador de Nomes</title>
-        <style>
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f0f0f0;
-}
-
-#container-8 {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 400px; /* Limita a largura máxima do container */
-    box-sizing: border-box; /* Para garantir que o padding seja contado na largura total */
-}
-
-#name-list-8 {
-    width: 100%; /* Ajusta a largura para 100% do container */
-    height: 150px;
-    max-width: 100%; /* Impede que ultrapasse a largura do container */
-}
-
-#result-8, #date-time-8 {
-    font-size: 1.5em;
-    margin-top: 20px;
-}
-
-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    font-size: 1em;
-}
-
-input[type="number"] {
-    margin-top: 10px;
-    padding: 5px;
-    font-size: 1em;
-    width: 100%; /* Ajusta a largura para ocupar toda a largura do container */
-    max-width: 120px; /* Impede que o campo ultrapasse um tamanho máximo */
-}
-
-@media screen and (max-width: 600px) {
-    #container-8 {
-        width: 90%; /* Reduz o tamanho do container em telas pequenas */
-        padding: 10px; /* Reduz o padding para se ajustar melhor */
-    }
-    #name-list-8 {
-        width: 100%;
-        height: 120px; /* Ajusta a altura para telas pequenas */
-    }
-    input[type="number"] {
-        width: 100%; /* Faz com que o campo ocupe toda a largura em telas pequenas */
-        max-width: 100%;
-    }
-    #result-8, #date-time-8 {
-        font-size: 1.2em; /* Reduz o tamanho da fonte para telas pequenas */
-    }
-    button {
-        width: 100%; /* Faz o botão ocupar toda a largura disponível */
-    }
-}
-
-        </style>
-    </head>
-    <body>
-        <div id="container-8">
-            <h1>Sorteador de Nomes</h1>
+        <div id="tabs-3">
+            <h2>Gerador de CNPJ</h2>
+            <button onclick="gerarCNPJ()">Gerar CNPJ</button>
+            <p id="cnpj"></p>
+            <script src="script5.js"></script>
+        </div>
+        <div id="tabs-4">
+            <h2>Gerador de Número de Matrícula</h2>
+            <button onclick="exibirMatricula()">Gerar Matrícula</button>
+            <p>Número de Matrícula: <span id="matricula"></span></p>
+            <script src="script6.js"></script>
+        </div>
+        <div id="tabs-5">
+            <h2>Gerador de AFD</h2>
+            <form action="https://drive.google.com/file/d/1avb22mwEn00ZCfsCFNr85EDQ6CE3Xc0K/view?usp=sharing" target="_blank">
+                <label class="periodo">
+                    Periodo Inicial<br>
+                    <input id="dataInicial" class="inputp" name="data" type="date">
+                </label>
+                <label class="periodo">
+                    Periodo Final<br>
+                    <input id="dataFinal" class="inputp" name="data" type="date">
+                </label>
+                <label class="pis">
+                    Pis<br>
+                    <textarea id="pisColaborador" class="pisc" name="pis" placeholder="Insira o PIS(separado por virgula)" rows="5" cols="33"></textarea>
+                </label>
+                <label id="batidasAll" class="batidas">
+                    Batidas<br>
+                    <input id="batida1" class="batidac" name="batida" type="time">
+                    <input id="batida2" class="batidac" name="batida" type="time">
+                    <input id="batida3" class="batidac" name="batida" type="time">
+                    <input id="batida4" class="batidac" name="batida" type="time">
+                </label>
+                <br>
+                <label>Batidas aleatórias
+                    <input id="aleatorio" class="aleatorio" name="aleatorio" type="checkbox">
+                </label>
+                <label id="saturday">Ignora Sábados
+                    <input id="sabado" class="domingo" name="aleatorio" type="checkbox" disabled>
+                </label>
+                <label id="sunday">Ignora Domingos
+                    <input id="domingo" class="sabado" name="aleatorio" type="checkbox" disabled>
+                </label>
+                <div class="divbutton">
+                    <button id="gerarAfd" class="gerar" name="gerar">Gerar AFD</button>
+                </div>
+            </form>
+            <script src="script7.js"></script>
+        </div>
+        <div id="tabs-6">
+            <h2>Calculadora de Relógio de Ponto</h2>
+            <form id="timeForm"></form>
+                <label for="startTime">Hora de Início:</label>
+                <input type="time" id="startTime" name="startTime"><br><br>
+                <label for="lunchStart">Início do Almoço:</label>
+                <input type="time" id="lunchStart" name="lunchStart"><br><br>
+                <label for="lunchEnd">Término do Almoço:</label>
+                <input type="time" id="lunchEnd" name="lunchEnd"><br><br>
+                <label for="endTime">Hora de Término:</label>
+                <input type="time" id="endTime" name="endTime"><br><br>
+                <input type="submit" value="Calcular">
+            </form>
+            <p id="result"></p>
+            <script src="script8.js"></script>
+        </div>
+        <div id="tabs-7">
+            <h2>Removedor de Pontos</h2>
+            <input type="text" name="texto" id="texto" placeholder="Digite um PIS, CPF ou CNPJ" />
+            <button onclick="copiarTexto()">Copiar</button>
+            <script>
+                function copiarTexto() {
+                    var pis = document.getElementById("texto").value;
+                    pis = pis.replaceAll(".", "").replaceAll("-", "").replaceAll(":", "").replaceAll(" ", "").replaceAll("/", "");
+                    navigator.clipboard.writeText(pis);
+                    alert("Texto copiado para a área de transferência!");
+                }
+            </script>
+        </div>
+        <div id="tabs-8">
+            <h2>Sorteador de Nomes</h2>
             <textarea id="name-list-8" placeholder="Insira os nomes aqui, um por linha..."></textarea>
             <input type="number" id="quantity-8" min="1" placeholder="Quantidade">
             <button id="sort-button-8">Sortear Nome</button>
             <div id="result-8"></div>
             <div id="date-time-8"></div>
+            <script src="script10.js"></script>
         </div>
-<script src="script10.js"></script>
-
-    </body>
-    </html>
-</div>
-  <div id="tabs-9">
-    <html xmlns="https://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
-<link rel="alternate" hreflang="es" href="https://www.calculatehours.com/es/calculadora-tarjeta-registro-horario.html">
-<link rel="alternate" hreflang="pt" href="https://www.calcularfolhadeponto.com.br/calculadora_cartao_ponto.html">
-<link rel="alternate" hreflang="en" href="https://www.calculatehours.com/Time-Card-Calculator.html">
-
-<title>Calculo de Hora Extra</title>
-<meta name="description" content="
-Calculo de hora extra, calculadora gratis para calculo de horas extras.
-">
-<meta name="keywords" content="
-calculo de hora extra, calculo de horas extras">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link href="style.css" rel="stylesheet" type="text/css">
-<link href="layout.css" rel="stylesheet" type="text/css">
-
-<script async="" src="https://platform-api.sharethis.com/panorama.js"></script><iframe id="pxcelframe" title="pxcelframe" src="//t.sharethis.com/a/t_.htm?ver=1.1601.23405&amp;cid=c010#rnd=1733762504013&amp;cid=c010&amp;dmn=&amp;gdpr_domain=false&amp;tt=t.dhj&amp;dhjLcy=49&amp;lbl=pxcel&amp;flbl=pxcel&amp;ll=d&amp;ver=1.1601.23405&amp;ell=d&amp;cck=__stid&amp;pn=%2FC%3A%2FUsers%2FAhgora%2FDesktop%2Fteste.html&amp;qs=na&amp;rdn=&amp;rpn=%2FC%3A%2FUsers%2FAhgora%2FDesktop%2Fteste.html&amp;rqs=na&amp;cc=BR&amp;cont=SA&amp;ipaddr=" style="display: none;"></iframe><script async="" src="//www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-F9REEQFEDW&amp;cx=c&amp;_slc=1"></script><script async="" src="https://platform-api.sharethis.com/panorama.js"></script></head><body id="page5"><iframe id="pxcelframe" title="pxcelframe" src="//t.sharethis.com/a/t_.htm?ver=1.1601.23405&amp;cid=c010#rnd=1733762220484&amp;cid=c010&amp;dmn=www.calcularfolhadeponto.com.br&amp;gdpr_domain=false&amp;tt=t.dhj&amp;dhjLcy=439&amp;lbl=pxcel&amp;flbl=pxcel&amp;ll=d&amp;ver=1.1601.23405&amp;ell=d&amp;cck=__stid&amp;pn=%2Fcalculo-de-horas-extras.html&amp;qs=na&amp;rdn=www.calcularfolhadeponto.com.br&amp;rpn=%2Fcalculadora-relogio-ponto.html&amp;rqs=na&amp;cc=BR&amp;cont=SA&amp;ipaddr=" style="display: none;"></iframe><script async="" src="//www.google-analytics.com/analytics.js"></script><script type="text/javascript" id="async-buttons" src="https://ws.sharethis.com/button/async-buttons.js"></script><script type="text/javascript" language="javascript">
-function setCookie(c_name,value,exdays)
-{
- var exdate=new Date();
- exdate.setDate(exdate.getDate() + exdays);
- var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
- document.cookie=c_name + "=" + c_value;
-}
-function getCookie(c_name)
-{
- var i,x,y,ARRcookies=document.cookie.split(";");
- for (i=0;i<ARRcookies.length;i++)
- {
-  x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
-  y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
-  x=x.replace(/^\s+|\s+$/g,"");
-  if (x==c_name) {
-   return unescape(y);
-  }
- }
-}
-var mobile = (/iphone|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
-var tmpURL = document.URL;
-if(tmpURL== 'https://www.calcularfolhadeponto.com.br/?view=full' || tmpURL== 'https://www.calcularfolhadeponto.com.br/?view=full') {
-	setCookie('fullview','yes','1');
-}
-var ckc = getCookie('fullview');
-if(ckc == 'yes') { }
-else if (mobile) {
- document.location = "https://www.calcularfolhadeponto.com.br/m/calculadora-horas.html";  
-}
-</script>
-<script type="text/javascript" src="https://w.sharethis.com/button/buttons.js"></script>
-<script type="text/javascript">stLight.options({publisher: "e059796a-950b-46be-a309-54ce6a0c797d", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
-<link rel="stylesheet" type="text/css" href="https://ws.sharethis.com/button/css/buttons-secure.css">
-
-
-    <!--header -->
-  
-    <!--header end-->
-    <div id="content">
-        <div class="main">
-        	<div class="indent">
-
-       	      <table width="849" border="0" cellpadding="0">
-  <tbody><tr>
-    
-    
-  </tr>
-</tbody></table>
-
-       	      <p>
-           	  
-          	  </p>
-           	  <div class="container">
-<div class="column-1">
-                    	<div class="box">
-                        	<div class="left-border">
-                            	<div class="right-border">
-                                	<div class="bot-border">
-                                    	<div class="left-top">
-                                        	<div class="right-top">
-                                            	<div class="left-bot">
-                                                	<div class="right-bot">
-                                                   	  
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="column-2">
-                        <div class="title">
-                          
-                          <br> <strong><span class="strong1">calculo hora extra<br></span></strong></div>
-                        <div class="container">
-                        	<div class="col-1">
-								<iframe src="https://www.calcularfolhadeponto.com.br/calculo_hora_extra/index.html" width="650" height="450" scrolling="no" frameborder="0"></iframe>
-                        	  <div class="social-icon">
-                        	    <a href="https://facebook.com" target="_blank"></a> 
-                        	    
-                        	    <!--<a href="https://plus.google.com" target="_blank"><img src="images/google_plus.png" alt="google_plus" width="20" height="20" /></a>-->
-                        	    <a href="https://linkedin.com" target="_blank"></a>
-                      	    </div>
-               <div class="padding-bottom-15">
-                 
-
-               </div>
-                       	  </div>
-                            
-                            <div class="col-3">
-                            	
-                              <div class="padding3">
-                                	
-                              </div>
-                            </div>
-                        </div>
-                                                <ul>
-                                
-                                
-</ul>
-                           	    
-
-  
-
-</div>
-                        <br>
-                        <div class="change">
-  <p><strong>                          </strong>                          <br> <br>
-    
-  </p></div>
-                        
-                      <div class="title padding2"><br> <br> </div>
-                        
-                    </div>
-              </div>
-            </div>
+        <div id="tabs-9">
+            <h2>Calculo de Hora Extra</h2>
+            <iframe src="https://www.calcularfolhadeponto.com.br/calculo_hora_extra/index.html" width="650" height="450" scrolling="no" frameborder="0"></iframe>
         </div>
-    
-    
-    
-    
-    
-    
-    <!--footer -->
-    <div id="footer">
-        <div class="main">
-        	<div class="box">
-            	<div class="left-border">
-                	<div class="right-border">
-                    	<div class="left-corner">
-                        	
-                        </div>
-                    </div>
-                </div>
-            </div>
-             <p>&nbsp;</p>
+        <div id="tabs-10">
+            <h2>Informações</h2>
+            <h4>Exibir Versão do Navegador</h4>
+            <p id="browser-version"></p>
+            <script src="script11.js"></script>
+            <h4>Obter o número do IP</h4>
+            <p id="ip"></p>
+            <script src="script12.js"></script>
         </div>
     </div>
-    
 
+    <script>
+        $(function() {
+            $("#tabs").tabs();
+        });
 
-<div id="stcpDiv" style="position: absolute; top: -1999px; left: -1988px;">ShareThis Copy and Paste</div><div id="stwrapper" class="stwrapper stwrapper4x" style="display: none;"><iframe allowtransparency="true" id="stLframe" class="stLframe" name="stLframe" frameborder="0" scrolling="no" src="https://ws.sharethis.com/secure/index.html"></iframe></div><div id="stOverlay" onclick="javascript:stWidget.closeWidget();"></div></body></html>
-  </div>
-  <div id="tabs-10">
+        // Função para bloquear teclas específicas e o botão direito do mouse
+        function disableKeys(event) {
+            if (event.keyCode === 123 || (event.ctrlKey && (event.keyCode === 83 || event.keyCode === 73 || event.keyCode === 67 || event.keyCode === 74 || event.keyCode === 85))) {
+            event.preventDefault();
+            }
+        }
 
-    <html>
-  <head>
-  </head>
-  <body>
-    <h4>Exibir Versão do Navegador</h4>
-    <p id="browser-version"></p>
+        // Função para bloquear o botão direito do mouse
+        window.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
 
-<script src="script11.js"></script>
-  </body>
-</html>
-<html>
-  <head>
-    <title>Obter o número do IP</title>
-<script src="script12.js"></script>
-</head>
-<body onload="getIP()">
-  <h4 id="ip-address">Carregando endereço IP...</h4>
-  <p id="ip"></p>
-</body>
-</html>
-    </div>
-  </div>
-
-  <script>
-    $(function() {
-      $("#tabs").tabs();
-    });
-  </script>
-</body>
-</html>
-
-  </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script>
-  $(function() {
-    $("#tabs").tabs();
-  });
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Seu Site</title>
-  <style>
-    #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #modal {
-      background-color: #fff;
-      padding: 20px;
-      max-width: 600px;
-      text-align: center;
-      color: navy; /* Adicionado */
-    }
-
-    #modal h2 {
-      font-size: 24px;
-    }
-
-    #modal p {
-      margin-bottom: 20px;
-    }
-
-    #acceptButton {
-      background-color: #4CAF50;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+        window.addEventListener('keydown', disableKeys);
+    </script>
 </body>
 </html>
