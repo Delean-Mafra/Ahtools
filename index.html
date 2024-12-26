@@ -6,7 +6,6 @@
     <link rel="icon" href="favicon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <script>
         // Função para fazer a requisição sem carregar a página
         function sendRequest(url) {
@@ -39,191 +38,310 @@
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
-
     <title>Delean Mafra WEB</title>
 
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            padding: 20px;
-            background: url('https://img.freepik.com/vetores-gratis/particula-de-tecnologia-abstrata-realista-de-fundo_23-2148431735.jpg?semt=ais_hybrid') no-repeat center center fixed;
-            background-size: cover;
-            color: #e0e0e0;
-        }
-
-        .tab {
-            display: none;
-        }
-
-        .tab-buttons {
-            display: flex;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-
-        .tab-button {
-            padding: 10px;
-            background-color: #00bcd4;
-            color: black;
-            font-weight: bold;
-            margin-right: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .tab-button:hover {
-            background-color: #00acc1;
-        }
-
-        .active-tab {
-            background-color: #0097a7;
-        }
-
-        iframe {
-            width: 100%;
-            height: 1500px;
-            border: none;
-        }
-
-        p {
-            text-align: center;
-        }
-
-        .blocked-content::after {
-            content: "Conteúdo não disponível.";
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: black;
-            font-weight: bold;
-            position: absolute;
-            z-index: 999;
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script> <!-- Inclusão do Tesseract.js -->
 </head>
 
 <body>
-    <p>Copyright ©2024 | Delean Mafra, todos os direitos reservados.</p>
 
-    <!-- Botões das abas -->
-    <div class="tab-buttons">
-        <div class="tab-button" onclick="openTab('tab1')">Valida AFD</div>
-        <div class="tab-button" onclick="openTab('tab2')">Utilitários</div>
-        <div class="tab-button" onclick="openTab('tab3')">Ahpoio</div>
-        <div class="tab-button" onclick="openTab('tab6')">IA CLT</div>
-        <div class="tab-button" onclick="openTab('tab7')">Conversor CSV e JSON</div>
-        <div class="tab-button" onclick="openTab('tab8')">Validar em massa</div>
-        <div class="tab-button" onclick="openTab('tab9')">Calculadora</div>
-        <div class="tab-button" onclick="openTab('tab10')">Diversos</div>
-        <div class="tab-button" onclick="openTab('tab11')">Outros (Em construção...)</div>
+    <!-- Cabeçalho de Copyright -->
+    <div class="copyright">
+        Copyright ©2023-2025 | Delean Mafra, todos os direitos reservados.
     </div>
 
-    <!-- Conteúdo das abas -->
-    <div id="tab1" class="tab">
-        <iframe src="https://delean-mafra.github.io/leitor_afd.github.io/"></iframe>
+    <!-- Menu Lateral -->
+    <div class="menu">
+        <!-- Primeira Aba -->
+        <div class="tab-container">
+            <div class="tab-button">Validador</div>
+            <div class="submenu">
+                <div class="tab-button" onclick="openTab('tab1')">Valida AFD da Portaria 595</div>
+                <div class="tab-button" onclick="openTab('tab2')">Valida AFD da Portaria 1510 e 671</div>
+                <div class="tab-button" onclick="openTab('tab3')">Valida planilha CPF</div>
+                <div class="tab-button" onclick="openTab('tab4')">Valida planilha PIS</div>
+            </div>
+        </div>
+        <!-- Segunda Aba -->
+        <div class="tab-container">
+            <div class="tab-button">Ferramentas de Suporte</div>
+            <div class="submenu">
+                <div class="tab-button" onclick="openTab('tab5')">Ahgutils</div>
+                <div class="tab-button" onclick="openTab('tab6')">Apoio</div>
+                <div class="tab-button" onclick="openTab('tab7')">Delean page</div>
+            </div>
+        </div>
+        <!-- 3° Aba -->
+        <div class="tab-container">
+            <div class="tab-button">Calculadoras</div>
+            <div class="submenu">
+                <div class="tab-button" onclick="openTab('tab9')">Calculadora de horas</div>
+                <div class="tab-button" onclick="openTab('tab10')">Calcular Jornadas</div>
+                <div class="tab-button" onclick="openTab('tab11')">Calcular horas técnicas</div>
+                <div class="tab-button" onclick="openTab('tab12')">Calcular dias</div>
+            </div>
+        </div>
+        <!-- 4° Aba -->
+        <div class="tab-container">
+            <div class="tab-button">Conversores</div>
+            <div class="submenu">
+                <div class="tab-button" onclick="openTab('tab13')">Converte JSON para CSV</div>
+                <div class="tab-button" onclick="openTab('tab14')">Converte CSV para JSON(CSV precisa ser virgulas e não aceita ponto e virgula)</div>
+                <div class="tab-button" onclick="openTab('tab15')">Converter CPF para PIS</div>
+                <div class="tab-button" onclick="openTab('tab16')">Converte URL para PDF(Não funciona em computadores com bloqueio de API)</div>
+                <div class="tab-button" onclick="openTab('tab17')">Converter Imagem em Texto</div>
+            </div>
+        </div>
+        <!-- 5° Aba (Novo Menu) -->
+        <div class="tab-container">
+            <div class="tab-button">Diversos</div>
+            <div class="submenu">
+                <div class="tab-button" onclick="openTab('tab18')">Integridade em Jogo TOTVS</div>
+                <div class="tab-button" onclick="openTab('tab19')">Base de conhecimento</div>
+                <div class="tab-button" onclick="openTab('tab20')">Portaria 671</div>
+                <div class="tab-button" onclick="openTab('tab21')">Leitor de QRCODE</div>
+            </div>
+        </div>
+        <!-- 6° Aba (Novo Menu) -->
+        <div class="tab-container">
+            <div class="tab-button">Inteligencia artifical</div>
+            <div class="submenu">
+                <div class="tab-button" onclick="openTab('tab30')">Consultor CLT(Redireciona para outra pagina)</div>
+                <!-- <div class="tab-button" onclick="openTab('tab51')">Nova ferramenta 2</div> -->
+            </div>
+        </div>
+        <!-- 7° Aba (Novo Menu) -->
+        <div class="tab-container">
+            <div class="tab-button">Novas Ferramentas3</div>
+            <div class="submenu">
+                <div class="tab-button" onclick="openTab('tab60')">Nova ferramenta 1</div>
+                <div class="tab-button" onclick="openTab('tab61')">Nova ferramenta 2</div>
+            </div>
+        </div>
     </div>
-    <div id="tab2" class="tab">
-        <iframe src="https://ahgutils.vercel.app/bankCycle"></iframe>
-    </div>
-    <div id="tab3" class="tab">
-        <iframe src="https://ahpoio.netlify.app/"></iframe>
-    </div>
-    <div id="tab4" class="tab">
-        <iframe src="https://www.ahgora.com.br/ajuda"></iframe>
-    </div>
-    <div id="tab5" class="tab">
-        <iframe src="Calculadora_Relogio_de_Ponto.html"></iframe>
-    </div>
-    <div id="tab6" class="tab">
-        <p><strong>Instruções para acessar o conteúdo de IA CLT:</strong></p>
-        <p>Ao clicar no botão "IA CLT", você será redirecionado para uma página externa.</p>
-    </div>
-    <div id="tab7" class="tab">
-        <iframe src="csvjson.html"></iframe>
-    </div>
-    <div id="tab8" class="tab">
-        <iframe src="validar_massa.html"></iframe>
-    </div>
-    <div id="tab9" class="tab">
-        <iframe id="iframe-tab9" src="calculadora.html" class="blocked-content"></iframe>
-    </div>
-    <div id="tab10" class="tab">
-        <iframe src="outros.html"></iframe>
-    </div>
-    <div id="tab11" class="tab">
-        <iframe src="curiosos.html"></iframe>
+
+    <!-- Conteúdo -->
+    <div class="container">
+        <div id="tab1" class="tab">
+            <iframe src="pagina1.html"></iframe>
+        </div>
+        <div id="tab2" class="tab">
+            <iframe src="pagina2.html"></iframe>
+        </div>
+        <div id="tab3" class="tab">
+            <iframe src="valida_cpf.html"></iframe>
+        </div>
+        <div id="tab4" class="tab">
+            <iframe src="valida_pis.html"></iframe>
+        </div>
+        <div id="tab5" class="tab">
+            <iframe src="https://ahgutils.vercel.app/bankCycle"></iframe>
+        </div>
+        <div id="tab6" class="tab">
+            <iframe src="https://ahpoio.netlify.app/"></iframe>
+        </div>
+        <div id="tab7" class="tab">
+            <iframe src="outros.html"></iframe>
+        </div>
+        <div id="tab9" class="tab">
+            <iframe src="calc2.html"></iframe>
+        </div>
+        <div id="tab10" class="tab">
+            <iframe src="Calculadora_Relogio_de_Ponto.html" scrolling="no"></iframe>
+        </div>
+        <div id="tab11" class="tab">
+            <iframe src="Consultoria_de_Suporte.html" scrolling="no"></iframe>
+        </div>
+        <div id="tab12" class="tab">
+            <iframe src="calendario_minha_verao.html" scrolling="no"></iframe>
+        </div>
+        <div id="tab13" class="tab">
+            <iframe src="converte_json_para_csv.html" scrolling="no"></iframe>
+        </div>
+        <div id="tab14" class="tab">
+            <iframe src="https://delean-mafra.github.io/json_func_csv/" scrolling="no"></iframe>
+        </div>
+        <div id="tab15" class="tab">
+            <iframe src="converte_cpf_pis.html" scrolling="no"></iframe>
+        </div>
+        <!-- Aba de converter URL para PDF -->
+        <div id="tab16" class="tab">
+            <h3>Converter URL para PDF</h3>
+            <input type="text" id="url-input" placeholder="Cole a URL aqui">
+            <button id="convert-button" onclick="convertToPDF()">Gerar PDF</button>
+            <div id="pdf-link">
+                <a href="#" id="download-link" target="_blank">Clique aqui para baixar o PDF</a>
+            </div>
+        </div>
+
+        <!-- Aba de converter Imagem em Texto -->
+        <div id="tab17" class="tab">
+            <h3>Converter Imagem em Texto</h3>
+            <!-- Upload de arquivo para OCR -->
+            <input type="file" id="ocr-file-input" accept="image/*" onchange="handleOCRUpload(event)" />
+            <div id="ocr-result">Texto extraído da imagem: </div>
+        </div>
+        <div id="tab18" class="tab">
+            <iframe src="https://i9acao.com.br/integridadeemjogototvs/" scrolling="no"></iframe>
+        </div>
+        <div id="tab19" class="tab">
+            <iframe src="https://www.ahgora.com.br/ajuda" scrolling="no"></iframe>
+        </div>
+        <div id="tab20" class="tab">
+            <iframe src="port671.html" style="width: 100%; height: 600px;"></iframe>
+        </div>
+
+        <div id="tab21" class="tab">
+            <h3>Leitor de QR Code (Upload)</h3>
+    
+            <!-- Upload de arquivo para QR Code -->
+            <input type="file" id="file-input-qr" accept="image/*" onchange="handleQRCodeUpload(event)" />
+            
+            <!-- Área para exibir o resultado -->
+            <div id="qr-result">Resultado do QR Code: </div>
+        </div>
+        <div id="tab30" class="tab">
+            <p><strong>Instruções para acessar o conteúdo de IA CLT:</strong></p>
+            <p>Ao clicar no botão "IA CLT", você será redirecionado para uma página externa.</p>
+        </div>
+
+
+
     </div>
 
     <script>
+        // Função para abrir a aba quando clicada
         function openTab(tabId) {
-            const tabs = document.querySelectorAll('.tab');
-            const buttons = document.querySelectorAll('.tab-button');
+            var tabs = document.querySelectorAll('.tab');
+            tabs.forEach(function(tab) {
+                tab.style.display = 'none'; // Oculta todas as abas
+            });
+            var activeTab = document.getElementById(tabId);
+            activeTab.style.display = 'block'; // Exibe a aba selecionada
+        }
 
-            if (tabId === 'tab6') {
-                window.open("https://hf.co/chat/assistant/6675c8db66137c408a16fcaa", "_blank");
-                return;
-            }
-
-            tabs.forEach(tab => tab.style.display = 'none');
-            buttons.forEach(button => button.classList.remove('active-tab'));
-
-            const activeTab = document.getElementById(tabId);
-            if (activeTab) activeTab.style.display = 'block';
-
-            const activeButton = Array.from(buttons).find(button => button.textContent.trim() === tabId.replace('tab', ''));
-            if (activeButton) activeButton.classList.add('active-tab');
-
-            if (tabId === "tab9") {
-                blockContentInTab9();
+        // Função para converter URL para PDF
+        function convertToPDF() {
+            var url = document.getElementById("url-input").value;
+            if (url) {
+                var pdfUrl = "https://pdfmyurl.com/?url=" + encodeURIComponent(url);
+                document.getElementById("download-link").href = pdfUrl;
+                document.getElementById("pdf-link").style.display = "block";
+            } else {
+                alert("Por favor, insira uma URL válida.");
             }
         }
 
-        function blockContentInTab9() {
-            const iframe = document.querySelector("#iframe-tab9");
-            iframe.addEventListener("load", () => {
-                try {
-                    const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-                    const unwantedImage = iframeDocument.querySelector('img[src="img/gruposonoda.png"]');
-                    const unwantedLink = iframeDocument.querySelector('a[href="http://www.sonodaponto.com.br"]');
+        // Função para processar o upload de imagem e realizar OCR
+        function handleOCRUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgElement = new Image();
+                    imgElement.src = e.target.result;
+                    imgElement.onload = function() {
+                        // Realiza o OCR na imagem carregada
+                        extractTextFromImage(imgElement);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
-                    if (unwantedImage) unwantedImage.remove();
-                    if (unwantedLink) unwantedLink.remove();
-                } catch (error) {
-                    console.warn("Não foi possível acessar o conteúdo do iframe. Problema de Same-Origin Policy.");
+        // Função para realizar OCR na imagem e extrair o texto
+        function extractTextFromImage(imgElement) {
+            // Usando Tesseract.js para extrair o texto da imagem
+            Tesseract.recognize(
+                imgElement,
+                'por', // Idioma do OCR (português)
+                {
+                    logger: (m) => console.log(m), // Opcional: log do progresso
                 }
+            ).then(({ data: { text } }) => {
+                document.getElementById("ocr-result").textContent = "Texto extraído: " + text;
+            }).catch(error => {
+                document.getElementById("ocr-result").textContent = "Erro ao processar a imagem.";
+                console.error(error);
             });
         }
+    </script>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            openTab('tab1');
-            const firstButton = document.querySelector('.tab-button');
-            if (firstButton) firstButton.classList.add('active-tab');
+    <script>
+        // Exibe a primeira aba como padrão
+        document.addEventListener('DOMContentLoaded', () => openTab('tab1'));
+    </script>
+
+<script>
+    function openTab(tabId) {
+        const tabs = document.querySelectorAll('.tab');
+        const buttons = document.querySelectorAll('.tab-button');
+
+        if (tabId === 'tab30') {
+            window.open("https://hf.co/chat/assistant/6675c8db66137c408a16fcaa", "_blank");
+            return;
+        }
+
+        tabs.forEach(tab => tab.style.display = 'none');
+        buttons.forEach(button => button.classList.remove('active-tab'));
+
+        const activeTab = document.getElementById(tabId);
+        if (activeTab) activeTab.style.display = 'block';
+
+        const activeButton = Array.from(buttons).find(button => button.textContent.trim() === tabId.replace('tab', ''));
+        if (activeButton) activeButton.classList.add('active-tab');
+
+        if (tabId === "tab9") {
+            blockContentInTab9();
+        }
+    }
+
+    function blockContentInTab9() {
+        const iframe = document.querySelector("#iframe-tab9");
+        iframe.addEventListener("load", () => {
+            try {
+                const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                const unwantedImage = iframeDocument.querySelector('img[src="img/gruposonoda.png"]');
+                const unwantedLink = iframeDocument.querySelector('a[href="http://www.sonodaponto.com.br"]');
+
+                if (unwantedImage) unwantedImage.remove();
+                if (unwantedLink) unwantedLink.remove();
+            } catch (error) {
+                console.warn("Não foi possível acessar o conteúdo do iframe. Problema de Same-Origin Policy.");
+            }
         });
-    </script>
+    }
 
-    <script type="text/python">
-from browser import document, window
+    document.addEventListener('DOMContentLoaded', () => {
+        openTab('tab1');
+        const firstButton = document.querySelector('.tab-button');
+        if (firstButton) firstButton.classList.add('active-tab');
+    });
+</script>
 
-def disable_right_click(event):
-    event.preventDefault()
-
-document.bind('contextmenu', disable_right_click)
-
-def disable_keys(event):
-    if event.keyCode in [123, 73, 67, 74, 85]:
-        print(f"Blocked key with code: {event.keyCode}")
+<script type="text/python">
+    from browser import document, window
+    
+    def disable_right_click(event):
         event.preventDefault()
+    
+    document.bind('contextmenu', disable_right_click)
+    
+    def disable_keys(event):
+        if event.keyCode in [123, 73, 67, 74, 85]:
+            print(f"Blocked key with code: {event.keyCode}")
+            event.preventDefault()
+    
+    window.bind('keydown', disable_keys)
+    
+    def disable_drag(event):
+        event.preventDefault()
+    
+    document.bind('dragstart', disable_drag)
+        </script>
 
-window.bind('keydown', disable_keys)
 
-def disable_drag(event):
-    event.preventDefault()
-
-document.bind('dragstart', disable_drag)
-    </script>
 </body>
 </html>
