@@ -74,6 +74,145 @@
         }
 
     </style>
+    <!-- Desenvolvido por Delean Mafra | Todos os direitos reservados -->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+
+    <title>Outros</title>
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background: url('https://image.pollinations.ai/prompt/Futur%C3%ADstica%20calculadora%20com%20tela%20hologr%C3%A1fica%20e%20bot%C3%B5es%20iluminados%20em%20neon%20em%20um%20fundo%20de%20cidade%20futurista?width=1920&height=1080&nologo=poll&nofeed=yes&model=Flux&seed=21987') no-repeat center center fixed;
+            background-size: cover;
+            color: #e0e0e0;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        .tab-buttons {
+            display: flex;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .tab-button {
+            padding: 10px;
+            background-color: #00bcd4;
+            color: black;
+            font-weight: bold;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .tab-button:hover {
+            background-color: #00acc1;
+        }
+
+        .active-tab {
+            background-color: #0097a7;
+        }
+
+        /* Ajustes no iframe */
+        iframe {
+            width: 80%;  /* Ajusta a largura do iframe */
+            height: 600px; /* Ajusta a altura do iframe */
+            border: none;
+            margin: 0 auto; /* Centraliza o iframe */
+            display: block;
+        }
+
+        /* Desabilita barras de rolagem */
+        iframe::-webkit-scrollbar {
+            display: none;
+        }
+
+        iframe {
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        p {
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+    <p></p>
+
+    <!-- Botões das abas -->
+    <div class="tab-buttons">
+        <div class="tab-button" onclick="openTab('tab1')">Calculadora</div>
+        <div class="tab-button" onclick="openTab('tab8')">Jornada</div>
+    </div>
+
+    <!-- Conteúdo das abas -->
+    <div id="tab1" class="tab">
+        <iframe src="calc2.html" scrolling="no"></iframe>
+    </div>
+    <div id="tab8" class="tab">
+        <iframe src="Calculadora_Relogio_de_Ponto.html" scrolling="no"></iframe>
+    </div>
+
+    <script>
+        function openTab(tabId) {
+            const tabs = document.querySelectorAll('.tab');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => tab.style.display = 'none');
+            buttons.forEach(button => button.classList.remove('active-tab'));
+
+            const activeTab = document.getElementById(tabId);
+            if (activeTab) activeTab.style.display = 'block';
+
+            const activeButton = Array.from(buttons).find(button => button.textContent.trim().toLowerCase() === tabId.replace('tab', '').toLowerCase());
+            if (activeButton) activeButton.classList.add('active-tab');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            openTab('tab1');
+            const firstButton = document.querySelector('.tab-button');
+            if (firstButton) firstButton.classList.add('active-tab');
+        });
+    </script>
+
+    <script type="text/python">
+from browser import document, window
+
+def disable_right_click(event):
+    event.preventDefault()
+
+document.bind('contextmenu', disable_right_click)
+
+def disable_keys(event):
+    if event.keyCode in [123, 73, 67, 74, 85]:
+        print(f"Blocked key with code: {event.keyCode}")
+        event.preventDefault()
+
+window.bind('keydown', disable_keys)
+
+def disable_drag(event):
+    event.preventDefault()
+
+document.bind('dragstart', disable_drag)
+    </script>
+</body>
+</html>
 </head>
 
 <body>
