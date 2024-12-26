@@ -345,6 +345,25 @@
     
     document.bind('dragstart', disable_drag)
         </script>
+    <script>
+        $(function() {
+            $("#tabs").tabs();
+        });
+
+        // Função para bloquear teclas específicas e o botão direito do mouse
+        function disableKeys(event) {
+            if (event.keyCode === 123 || (event.ctrlKey && (event.keyCode === 83 || event.keyCode === 73 || event.keyCode === 67 || event.keyCode === 74 || event.keyCode === 85))) {
+            event.preventDefault();
+            }
+        }
+
+        // Função para bloquear o botão direito do mouse
+        window.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+
+        window.addEventListener('keydown', disableKeys);
+    </script>
 
 
 </body>
