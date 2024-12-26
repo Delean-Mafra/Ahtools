@@ -9,13 +9,13 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f9;
+            background-color: #000000;
         }
 
         .container {
             max-width: 600px;
             margin: auto;
-            background: #fff;
+            background: #06a5e4;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -51,6 +51,28 @@
             margin-top: 20px;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script>
+    <script type="text/python">
+        from browser import document, window
+        
+        def disable_right_click(event):
+            event.preventDefault()
+        
+        document.bind('contextmenu', disable_right_click)
+        
+        def disable_keys(event):
+            if event.keyCode in [123, 73, 67, 74, 85]:
+                print(f"Blocked key with code: {event.keyCode}")
+                event.preventDefault()
+        
+        window.bind('keydown', disable_keys)
+        
+        def disable_drag(event):
+            event.preventDefault()
+        
+        document.bind('dragstart', disable_drag)
+    </script>
 </head>
 <body>
     <div class="container">
@@ -62,18 +84,14 @@
 
     <script>
         function validaPIS(pis) {
-            // Remove caracteres não numéricos
             pis = pis.replace(/\D/g, '');
 
-            // Verifica se possui 12 dígitos e descarta o primeiro '0' se necessário
             if (pis.length === 12 && pis.startsWith('0')) {
                 pis = pis.slice(1);
             }
 
-            // Verifica se o PIS resultante possui exatamente 11 dígitos
             if (pis.length !== 11) return false;
 
-            // Cálculo do dígito verificador
             const pesos = [3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
             const soma = pis
                 .slice(0, 10)
@@ -101,7 +119,6 @@
                 const rows = csvContent.split('\n').map(row => row.split(';'));
                 let header = rows.shift();
 
-                // Identifica a coluna PIS independentemente do caso
                 const pisIndex = header.findIndex(
                     col => col.trim().toLowerCase() === 'pis'
                 );
@@ -111,11 +128,9 @@
                     return;
                 }
 
-                // Adiciona a coluna "Validação" no cabeçalho
                 header = header.concat('Validação');
                 const resultRows = [header];
 
-                // Processa as linhas
                 rows.forEach(row => {
                     if (row[pisIndex]) {
                         const isValid = validaPIS(row[pisIndex]);
@@ -145,6 +160,20 @@
 
             alert('O arquivo processado foi gerado e baixado com sucesso!');
         }
+
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode === 123 || (e.ctrlKey && (e.keyCode === 83 || e.keyCode === 73 || e.keyCode === 67 || e.keyCode === 74 || e.keyCode === 85))) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('dragstart', function (e) {
+            e.preventDefault();
+        });
     </script>
 </body>
 </html>
