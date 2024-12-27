@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Dólar para Real</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000000;
+        }
+        
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .converter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .converter input {
+            width: 100px;
+            padding: 10px;
+            margin: 0 10px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        
+        .converter span {
+            font-size: 1.2em;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conversor de Dólar para Real</h1>
+        <div class="converter">
+            <input type="number" id="usd" placeholder="USD" oninput="convertCurrency()">
+            <span>=</span>
+            <input type="text" id="brl" placeholder="BRL" readonly>
+        </div>
+    </div>
+    <script>
+        async function getExchangeRate() {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const data = await response.json();
+                return data.rates.BRL;
+            } catch (error) {
+                console.error('Erro ao buscar a taxa de câmbio:', error);
+                return null;
+            }
+        }
+        
+        async function convertCurrency() {
+            const usdInput = document.getElementById('usd').value;
+            const brlInput = document.getElementById('brl');
+            const rate = await getExchangeRate();
+        
+            if (rate) {
+                const brlValue = (usdInput * rate).toFixed(2);
+                brlInput.value = brlValue;
+            } else {
+                brlInput.value = 'Erro';
+            }
+        }
+        
+        // Atualiza a taxa de câmbio a cada 60 segundos
+        setInterval(convertCurrency, 60000);
+
+    </script>
+</body>
+</html>
