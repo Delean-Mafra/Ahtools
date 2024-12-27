@@ -24,11 +24,15 @@
         };
     </script>
     <style>
-        body {
+       body {
         font-family: Arial, sans-serif;
         background-color: transparent; /* Remove o fundo preto */
         margin: 0;
-        padding: 20px;
+        padding: 0; /* Remover o padding para garantir que o conteúdo ocupe toda a tela */
+        height: 100vh; /* Garantir que o body ocupe toda a altura da tela */
+        display: flex; /* Usar flexbox para garantir que o conteúdo seja centrado corretamente */
+        justify-content: center; /* Centralizar horizontalmente */
+        align-items: center; /* Centralizar verticalmente */
     }
         .container {
             width: 80%;
