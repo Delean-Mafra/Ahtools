@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor CSV para JSON</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython_stdlib.js"></script>
+    <style>
+        /* Remover a imagem de fundo */
+        body {
+            font-family: Arial, sans-serif;
+            background: none; /* Removido fundo */
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Mantenha o conteúdo no topo */
+            height: 100vh;
+            padding-top: 20px; /* Adiciona um pequeno espaçamento do topo */
+        }
+
+        h1 {
+            color: #ff6600; /* Laranja */
+            text-align: center;
+            margin-bottom: 20px; /* Espaçamento entre título e botão */
+        }
+
+        /* Estilo para o input do arquivo */
+        input[type="file"] {
+            margin: 20px 0;
+            padding: 10px;
+            border: 2px solid #4CAF50; /* Verde */
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            display: block; /* Garante que o input seja exibido como bloco */
+            margin-bottom: 20px; /* Espaço entre o botão e o próximo conteúdo */
+        }
+
+        /* Estilo para o botão */
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50; /* Verde */
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Estilo para o link de resultado */
+        #resultado a {
+            display: block;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #000; /* Preto */
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        #resultado a:hover {
+            background-color: #ff0000; /* Vermelho */
+        }
+    </style>
+</head>
+<body onload="brython()">
+<script type="text/python">
+from browser import document, window, alert
+import json
+
+# Dicionário de mapeamento das colunas do CSV para os campos do JSON
+mapa_campos = {
+    "Data de Admissão": "dataAdmissao",
+    "matricula": "matricula",
+    "Matricula": "matricula",
+    "Mátricula": "matricula",
+    "mátricula": "matricula",
+    "nome": "nome",
+    "Nome": "nome",
+    "NOME": "nome",
+    "bate_ponto": "bate_ponto",
+    "bate ponto": "bate_ponto",
+    "Bate Ponto": "bate_ponto",
+    "Bate ponto": "bate_ponto",
+    "Data de Nascimento": "dataNascimento",    
+    "data de dascimento": "dataNascimento", 
+    "data nascimento": "dataNascimento",  
+    "dataNascimento": "dataNascimento",        
+    "Carteira de trabalho":"ctps",
+    "carteira de trabalho":"ctps",
+    "ctps":"ctps",
+    "CTPS":"ctps",    
+    "pis": "pis",
+    "Regime de Trabalho": "regimeTrabalho",
+    "regime de trabalho": "regimeTrabalho",
+    "cargo": "cargo",
+    "Cargo": "cargo",
+    "CNPJ": "cnpj",
+    "cnpj": "cnpj",
+    "Data para competencia do CNPJ": "dataCnpj",
+    "Data CNPJ": "dataCnpj",
+    "date": "dataCnpj",
+    "Código de Barras": "codBarras",
+    "codBarras": "codBarras",
+    "Codigo de Barras": "codBarras",
+    "codigo de barras": "codBarras",
+    "Codigo de barras": "codBarras",
+    "Cod Barras": "codBarras",
+    "Cód Barras": "codBarras",
+    "Cód barras": "codBarras",
+    "cód barras": "codBarras",
+    "codbarras": "codBarras",
+    "Código Interno": "codInterno",
+    "codInterno": "codInterno",
+    "Codigo Interno": "codInterno",
+    "codigo Interno": "codInterno",
+    "codigo interno": "codInterno",
+    "cod interno": "codInterno",
+    "cód interno": "codInterno",
+    "cod Interno": "codInterno",
+    "cpf": "cpf",
+    "Data de Desligamento": "dataDemissao",
+    "departamento": "departamento",
+    "Departamento": "departamento",
+    "Carga horaria":"carga_horaria",
+    "carga horaria":"carga_horaria",
+    "carga_horaria":"carga_horaria",
+    "email": "email",
+    "e-mail": "email",
+    "E-mail": "email",
+    "email_chefia": "email_chefia",
+    "email chefia": "email_chefia",
+    "e-mail chefia": "email_chefia",
+    "E-mail da Chefia Imediata": "email_chefia",
+    "Email da Chefia Imediata": "email_chefia",
+    "email da Chefia Imediata": "email_chefia",
+    "e-mail da Chefia Imediata": "email_chefia",
+}
+
+
+def processar_arquivo(evt):
+    file = evt.target.files[0]
+    reader = window.FileReader.new()
+    reader.onload = lambda e: processar_conteudo(e.target.result)
+    reader.readAsText(file)
+
+def processar_conteudo(conteudo):
+    linhas = conteudo.split('\n')
+    cabecalho = linhas[0].strip().split(',')
+    data = []
+
+    for linha in linhas[1:]:
+        if linha.strip():
+            valores = linha.strip().split(',')
+            funcionario = {}
+            for i, valor in enumerate(valores):
+                campo_csv = cabecalho[i]
+                if campo_csv in mapa_campos:
+                    campo_json = mapa_campos[campo_csv]
+                    funcionario[campo_json] = valor
+            data.append(funcionario)
+
+    json_data = json.dumps(data, indent=4, ensure_ascii=False)
+    criar_link_download(json_data)
+
+def criar_link_download(json_data):
+    blob = window.Blob.new([json_data], {'type': 'application/json'})
+    url = window.URL.createObjectURL(blob)
+    
+    link = document.createElement('a')
+    link.href = url
+    link.download = 'funcionarios.json'
+    link.textContent = 'Baixar arquivo JSON'
+    
+    document['resultado'].innerHTML = ''
+    document['resultado'] <= link
+
+document['arquivo_csv'].bind('change', processar_arquivo)
+</script>
+
+<h1>Conversor CSV de funcionarios para JSON</h1>
+<input type="file" id="arquivo_csv" accept=".csv">
+<div id="resultado"></div>
+
+</body>
+</html>
