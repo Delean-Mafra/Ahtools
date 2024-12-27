@@ -10,13 +10,10 @@
         // Função para fazer a requisição sem carregar a página
         function sendRequest(url) {
             fetch(url, {
-                method: 'GET', // O método HTTP a ser utilizado
-                headers: {
-                    'Accept': 'application/json', // Definir tipo de resposta esperada (opcional)
-                }
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
             })
             .then(response => {
-                // Se a requisição for bem-sucedida, você pode adicionar algum log, se necessário
                 if (response.ok) {
                     console.log(`Acesso registrado para: ${url}`);
                 } else {
@@ -30,22 +27,36 @@
 
         // Função que será chamada quando a página for carregada
         window.onload = function() {
-            // Chamando as duas URLs para "registrar" os acessos
             sendRequest('https://bit.ly/ferramentas_rh');
             sendRequest('https://delean-mafra.github.io/Ahtools/?utm_source=https://delean-mafra.github.io/Ahtools/&utm_medium=https://delean-mafra.github.io/Ahtools/&utm_campaign=https://delean-mafra.github.io/Ahtools/');
         }
     </script>
-    
+
+    <!-- Inclusão do Brython e Tesseract.js -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    
     <title>Delean Mafra - Portal de ferramentas de suporte</title>
 
     <link rel="stylesheet" href="index.css">
-    <script src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script> <!-- Inclusão do Tesseract.js -->
+    
+    <style>
+        /* Estilos para o efeito de partículas */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
 </head>
 
 <body>
+    <div id="particles-js"></div>
 
     <!-- Cabeçalho de Copyright -->
     <div class="copyright">
@@ -110,7 +121,6 @@
             <div class="tab-button">Inteligencia artifical</div>
             <div class="submenu">
                 <div class="tab-button" onclick="openTab('tab30')">Consultor CLT(Redireciona para outra pagina)</div>
-                <!-- <div class="tab-button" onclick="openTab('tab51')">Nova ferramenta 2</div> -->
             </div>
         </div>
         <!-- 7° Aba (Novo Menu) -->
@@ -118,7 +128,6 @@
             <div class="tab-button">Sugestão de melhoria</div>
             <div class="submenu">
                 <div class="tab-button" onclick="openTab('tab60')">Formulario de sugestão de melhoria</div>
-                <!-- <div class="tab-button" onclick="openTab('tab61')">Nova ferramenta 2</div> -->
             </div>
         </div>
     </div>
@@ -167,7 +176,6 @@
         <div id="tab15" class="tab">
             <iframe src="converte_cpf_pis.html" scrolling="no"></iframe>
         </div>
-        <!-- Aba de converter URL para PDF -->
         <div id="tab16" class="tab">
             <h3>Converter URL para PDF</h3>
             <input type="text" id="url-input" placeholder="Cole a URL aqui">
@@ -206,7 +214,24 @@
         <div id="tab30" class="tab">
             <p><strong>Instruções para acessar o conteúdo de IA CLT:</strong></p>
             <p>Ao clicar no botão "IA CLT", você será redirecionado para uma página externa.</p>
+            <button id="open-link-btn">IA CLT</button> <!-- Botão para abrir o link -->
         </div>
+        
+        <!-- Brython inicio -->
+        <script type="text/python">
+        from browser import document, window
+        
+        # Função para abrir a página
+        def open_tab(event):
+            window.open("https://hf.co/chat/assistant/6675c8db66137c408a16fcaa", "_blank")
+        
+        # Associa o evento de clique ao botão
+        document["open-link-btn"].bind("click", open_tab)
+        </script>
+            
+
+        <!--Brython final  -->
+
         <div id="tab60" class="tab">
             <iframe src="https://forms.gle/XA9u6cXEYjhVaNSw6"></iframe>
         </div>
@@ -214,10 +239,6 @@
         <div id="tab22" class="tab">
             <iframe src="valor_dolar.html"></iframe>
         </div>
-        
-
-
-
     </div>
 
     <script>
@@ -243,133 +264,114 @@
             }
         }
 
-        // Função para processar o upload de imagem e realizar OCR
-        function handleOCRUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const imgElement = new Image();
-                    imgElement.src = e.target.result;
-                    imgElement.onload = function() {
-                        // Realiza o OCR na imagem carregada
-                        extractTextFromImage(imgElement);
+                // Função para processar o upload de imagem e realizar OCR
+                function handleOCRUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const imgElement = new Image();
+                            imgElement.src = e.target.result;
+                            imgElement.onload = function() {
+                                // Realiza o OCR na imagem carregada
+                                extractTextFromImage(imgElement);
+                            }
+                        };
+                        reader.readAsDataURL(file);
                     }
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // Função para realizar OCR na imagem e extrair o texto
-        function extractTextFromImage(imgElement) {
-            // Usando Tesseract.js para extrair o texto da imagem
-            Tesseract.recognize(
-                imgElement,
-                'por', // Idioma do OCR (português)
-                {
-                    logger: (m) => console.log(m), // Opcional: log do progresso
                 }
-            ).then(({ data: { text } }) => {
-                document.getElementById("ocr-result").textContent = "Texto extraído: " + text;
-            }).catch(error => {
-                document.getElementById("ocr-result").textContent = "Erro ao processar a imagem.";
-                console.error(error);
-            });
-        }
-    </script>
-
-    <script>
-        // Exibe a primeira aba como padrão
-        document.addEventListener('DOMContentLoaded', () => openTab('tab1'));
-    </script>
-
-<script>
-    function openTab(tabId) {
-        const tabs = document.querySelectorAll('.tab');
-        const buttons = document.querySelectorAll('.tab-button');
-
-        if (tabId === 'tab30') {
-            window.open("https://hf.co/chat/assistant/6675c8db66137c408a16fcaa", "_blank");
-            return;
-        }
-
-        tabs.forEach(tab => tab.style.display = 'none');
-        buttons.forEach(button => button.classList.remove('active-tab'));
-
-        const activeTab = document.getElementById(tabId);
-        if (activeTab) activeTab.style.display = 'block';
-
-        const activeButton = Array.from(buttons).find(button => button.textContent.trim() === tabId.replace('tab', ''));
-        if (activeButton) activeButton.classList.add('active-tab');
-
-        if (tabId === "tab9") {
-            blockContentInTab9();
-        }
-    }
-
-    function blockContentInTab9() {
-        const iframe = document.querySelector("#iframe-tab9");
-        iframe.addEventListener("load", () => {
-            try {
-                const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-                const unwantedImage = iframeDocument.querySelector('img[src="img/gruposonoda.png"]');
-                const unwantedLink = iframeDocument.querySelector('a[href="http://www.sonodaponto.com.br"]');
-
-                if (unwantedImage) unwantedImage.remove();
-                if (unwantedLink) unwantedLink.remove();
-            } catch (error) {
-                console.warn("Não foi possível acessar o conteúdo do iframe. Problema de Same-Origin Policy.");
-            }
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        openTab('tab1');
-        const firstButton = document.querySelector('.tab-button');
-        if (firstButton) firstButton.classList.add('active-tab');
-    });
-</script>
-
-<script type="text/python">
-    from browser import document, window
-    
-    def disable_right_click(event):
-        event.preventDefault()
-    
-    document.bind('contextmenu', disable_right_click)
-    
-    def disable_keys(event):
-        if event.keyCode in [123, 73, 67, 74, 85]:
-            print(f"Blocked key with code: {event.keyCode}")
-            event.preventDefault()
-    
-    window.bind('keydown', disable_keys)
-    
-    def disable_drag(event):
-        event.preventDefault()
-    
-    document.bind('dragstart', disable_drag)
-        </script>
-    <script>
-        $(function() {
-            $("#tabs").tabs();
-        });
-
-        // Função para bloquear teclas específicas e o botão direito do mouse
-        function disableKeys(event) {
-            if (event.keyCode === 123 || (event.ctrlKey && (event.keyCode === 83 || event.keyCode === 73 || event.keyCode === 67 || event.keyCode === 74 || event.keyCode === 85))) {
-            event.preventDefault();
-            }
-        }
-
-        // Função para bloquear o botão direito do mouse
-        window.addEventListener('contextmenu', function(event) {
-            event.preventDefault();
-        });
-
-        window.addEventListener('keydown', disableKeys);
-    </script>
-
-
-</body>
-</html>
+        
+                // Função para realizar OCR na imagem e extrair o texto
+                function extractTextFromImage(imgElement) {
+                    // Usando Tesseract.js para extrair o texto da imagem
+                    Tesseract.recognize(
+                        imgElement,
+                        'por', // Idioma do OCR (português)
+                        {
+                            logger: (m) => console.log(m), // Opcional: log do progresso
+                        }
+                    ).then(({ data: { text } }) => {
+                        document.getElementById("ocr-result").textContent = "Texto extraído: " + text;
+                    }).catch(error => {
+                        document.getElementById("ocr-result").textContent = "Erro ao processar a imagem.";
+                        console.error(error);
+                    });
+                }
+        
+                // Inicializando o efeito de partículas usando o particles.js
+                particlesJS('particles-js', {
+                    particles: {
+                        number: {
+                            value: 80, // Número de partículas
+                            density: {
+                                enable: true,
+                                value_area: 800
+                            }
+                        },
+                        color: {
+                            value: "#ffffff" // Cor das partículas (branco)
+                        },
+                        shape: {
+                            type: "circle", // Forma das partículas
+                            stroke: {
+                                width: 0,
+                                color: "#ffffff"
+                            }
+                        },
+                        opacity: {
+                            value: 0.5,
+                            random: true,
+                            anim: {
+                                enable: true,
+                                speed: 1,
+                                opacity_min: 0.1,
+                                sync: false
+                            }
+                        },
+                        size: {
+                            value: 3,
+                            random: true,
+                            anim: {
+                                enable: false,
+                                speed: 4,
+                                size_min: 0.1,
+                                sync: false
+                            }
+                        },
+                        line_linked: {
+                            enable: true,
+                            distance: 150,
+                            color: "#ffffff",
+                            opacity: 0.4,
+                            width: 1
+                        },
+                        move: {
+                            enable: true,
+                            speed: 2,
+                            direction: "none",
+                            random: false,
+                            straight: false,
+                            out_mode: "out",
+                            bounce: false
+                        }
+                    },
+                    interactivity: {
+                        detect_on: "canvas",
+                        events: {
+                            onhover: {
+                                enable: true,
+                                mode: "repulse"
+                            },
+                            onclick: {
+                                enable: true,
+                                mode: "push"
+                            },
+                            resize: true
+                        }
+                    },
+                    retina_detect: true
+                });
+            </script>
+        </body>
+        </html>
+        
