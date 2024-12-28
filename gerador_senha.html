@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Senha Segura</title>
+    <style>
+        /* Estilos CSS */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .options {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .options input {
+            margin-right: 10px;
+        }
+
+        .options label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .password {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Senha Segura</h1>
+        <p>Gere senhas aleatórias seguras. Existem algumas opções de segurança disponíveis.</p>
+
+        <div class="options">
+            <label for="lowercase">Letras minúsculas</label>
+            <input type="checkbox" id="lowercase" checked>
+            <br>
+            <label for="uppercase">Letras maiúsculas</label>
+            <input type="checkbox" id="uppercase" checked>
+            <br>
+            <label for="numbers">Números</label>
+            <input type="checkbox" id="numbers" checked>
+            <br>
+            <label for="special">Caracteres especiais</label>
+            <input type="checkbox" id="special" checked>
+            <br>
+            <label for="unique">Cada caractere apenas uma vez</label>
+            <input type="checkbox" id="unique" checked>
+        </div>
+
+        <div>
+            <label for="length">Comprimento do caractere de senha:</label>
+            <input type="range" id="length" min="6" max="20" value="8">
+            <span id="length-value">8</span>
+        </div>
+
+        <button onclick="generatePassword()">Gerar Senha</button>
+
+        <div class="password" id="password">
+            <!-- Senha gerada será exibida aqui -->
+        </div>
+    </div>
+
+    <script>
+        // Função para gerar a senha aleatória
+        function generatePassword() {
+            // Obter as opções de personalização da senha
+            const useLowercase = document.getElementById('lowercase').checked;
+            const useUppercase = document.getElementById('uppercase').checked;
+            const useNumbers = document.getElementById('numbers').checked;
+            const useSpecial = document.getElementById('special').checked;
+            const useUnique = document.getElementById('unique').checked;
+            const passwordLength = document.getElementById('length').value;
+            
+            // Caracteres permitidos
+            const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+            const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = '0123456789';
+            const specialCharacters = '!@#$%^&*()-_=+[{]}|;:",<.>/?';
+            
+            // Gerar o conjunto de caracteres permitido com base nas opções
+            let characters = '';
+            if (useLowercase) characters += lowercaseLetters;
+            if (useUppercase) characters += uppercaseLetters;
+            if (useNumbers) characters += numbers;
+            if (useSpecial) characters += specialCharacters;
+
+            // Verificar se há caracteres permitidos
+            if (characters === '') {
+                document.getElementById('password').innerText = 'Selecione pelo menos uma opção de caracteres.';
+                return;
+            }
+
+            // Função para gerar a senha
+            let password = '';
+            let usedCharacters = new Set(); // Para garantir que cada caractere é único
+            for (let i = 0; i < passwordLength; i++) {
+                let character;
+                do {
+                    const randomIndex = Math.floor(Math.random() * characters.length);
+                    character = characters[randomIndex];
+                } while (useUnique && usedCharacters.has(character)); // Verifica se o caractere já foi usado
+                password += character;
+                usedCharacters.add(character); // Marca o caractere como usado
+            }
+
+            // Exibir a senha gerada
+            document.getElementById('password').innerText = password;
+        }
+
+        // Atualizar o valor do comprimento da senha ao mover o slider
+        document.getElementById('length').addEventListener('input', function() {
+            document.getElementById('length-value').innerText = this.value;
+        });
+    </script>
+</body>
+</html>
