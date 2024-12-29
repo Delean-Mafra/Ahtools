@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Ajustada</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: transparent; /* Remove o fundo preto */
+            margin: 0;
+            padding: 20px;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 200vh; /* 100% da altura da tela */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinha o conteúdo no topo */
+            overflow: hidden; /* Garante que nada saia da tela */
+        }
+
+        iframe {
+            width: 80%; /* Aumentei a largura para 80% da tela */
+            height: 100%; /* A altura foi ajustada para ocupar 100% da altura do contêiner */
+            border: none;
+            margin: 0;
+            display: block;
+            transform: translateY(-65px); /* Mantive o corte da parte superior, mas ajustei a altura */
+        }
+
+    </style>
+        <script>
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) { // F12
+                return false;
+            }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
+                return false;
+            }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
+                return false;
+            }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
+                return false;
+            }
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U
+                return false;
+            }
+        };
+    </script>
+</head>
+
+<body onload="brython()">
+    <div class="iframe-container">
+        <iframe src="https://deepai.org/chat/gpt-chat" scrolling="no"></iframe>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+
+    <script type="text/python">
+from browser import document, window
+
+def disable_right_click(event):
+    event.preventDefault()
+
+document.bind('contextmenu', disable_right_click)
+
+def disable_keys(event):
+    if event.keyCode in [123, 73, 67, 74, 85]:
+        print(f"Blocked key with code: {event.keyCode}")
+        event.preventDefault()
+
+window.bind('keydown', disable_keys)
+
+def disable_drag(event):
+    event.preventDefault()
+
+document.bind('dragstart', disable_drag)
+    </script>
+
+</body>
+</html>
