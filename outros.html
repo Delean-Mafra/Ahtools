@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-br"><head>
+<html lang="pt-br">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador e Validador de CPF e PIS</title>
-        <script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script>
         document.onkeydown = function(e) {
             if(e.keyCode == 123) { // F12
                 return false;
@@ -11,7 +15,7 @@
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
                 return false;
             }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'Shift'.charCodeAt(0)) { // Ctrl+Shift+C
                 return false;
             }
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
@@ -21,13 +25,86 @@
                 return false;
             }
         };
-    </script>
 
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script>
+        function gerarCpf() {
+            let quantidade = document.getElementById('gerarCpfQuantidade').value;
+            let resultado = '';
+            for (let i = 0; i < quantidade; i++) {
+                let cpf = Array(9).fill(0).map(() => Math.floor(Math.random() * 10));
+                let d1 = cpf.reduce((acc, val, idx) => acc + val * (10 - idx), 0) % 11;
+                d1 = d1 < 2 ? 0 : 11 - d1;
+                cpf.push(d1);
+                let d2 = cpf.reduce((acc, val, idx) => acc + val * (11 - idx), 0) % 11;
+                d2 = d2 < 2 ? 0 : 11 - d2;
+                cpf.push(d2);
+
+                let pis = gerarPis(); // Gera o PIS
+                resultado += 'CPF: ' + cpf.join('') + ' - PIS: ' + pis + '\n';
+
+            }
+            document.getElementById('resultado').innerText = resultado;
+        }
+
+        function gerarPis() {
+            let pisBase = Array(10).fill(0).map(() => Math.floor(Math.random() * 10)); // Gerar 9 primeiros números
+            let multiplicadores = [3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+            let soma = pisBase.reduce((acc, val, idx) => acc + val * multiplicadores[idx], 0);
+            let resto = soma % 11;
+            let dv = resto < 2 ? 0 : 11 - resto; // Dígito verificador
+            pisBase.push(dv); // Adiciona o dígito verificador
+            return pisBase.join('');
+        }
+
+        function validarPIS() {
+            let pis = document.getElementById('pis').value.replace(/\D/g, '');
+            if (pis.length !== 11) {
+                document.getElementById('resultado').innerText = 'PIS inválido';
+                return;
+            }
+            let multiplicadores = [3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+            let soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(pis.charAt(i)) * multiplicadores[i];
+            }
+            let resto = soma % 11;
+            let dv = resto < 2 ? 0 : 11 - resto;
+            if (parseInt(pis.charAt(10)) === dv) {
+                document.getElementById('resultado').innerText = 'PIS válido';
+            } else {
+                document.getElementById('resultado').innerText = 'PIS inválido';
+            }
+        }
+
+        function validarCpfPis() {
+            let cpf = document.getElementById('validarCpfPisInput').value.replace(/\D/g, '');
+            if (cpf.length !== 11) {
+                document.getElementById('resultado').innerText = 'CPF inválido';
+                return;
+            }
+            let soma = 0;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            let d1 = soma % 11;
+            d1 = d1 < 2 ? 0 : 11 - d1;
+            soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            let d2 = soma % 11;
+            d2 = d2 < 2 ? 0 : 11 - d2;
+            if (parseInt(cpf.charAt(9)) === d1 && parseInt(cpf.charAt(10)) === d2) {
+                document.getElementById('resultado').innerText = 'CPF válido';
+            } else {
+                document.getElementById('resultado').innerText = 'CPF inválido';
+            }
+        }
+
+        function limparPontuacao() {
+            let input = document.getElementById('validarCpfPisInput');
+            input.value = input.value.replace(/\D/g, '');
+        }
+    </script>
 
     <style>
         /* Estilo para o corpo */
@@ -179,7 +256,7 @@
             <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-7" aria-labelledby="ui-id-7" aria-selected="false" aria-expanded="false"><a href="#tabs-7" tabindex="-1" class="ui-tabs-anchor" id="ui-id-7">Removedor de pontos</a></li>
             <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-8" aria-labelledby="ui-id-8" aria-selected="false" aria-expanded="false"><a href="#tabs-8" tabindex="-1" class="ui-tabs-anchor" id="ui-id-8">Sorteador</a></li>
             <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-9" aria-labelledby="ui-id-9" aria-selected="false" aria-expanded="false"><a href="#tabs-9" tabindex="-1" class="ui-tabs-anchor" id="ui-id-9">Calc HE</a></li>
-            <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-10" aria-labelledby="ui-id-10" aria-selected="false" aria-expanded="false"><a href="#tabs-10" tabindex="-1" class="ui-tabs-anchor" id="ui-id-10">Informações</a></li>
+            <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-10" aria-labelledby="ui-id-10" aria-selected="false" aria-expanded="false"><a href="#tabs-10" tabindex="-1" class="ui-tabs-anchor" id="ui-id-10">Outros</a></li>
         </ul>
         <div id="tabs-1" aria-labelledby="ui-id-1" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true" style="display: none;">
             <h2>Gerador de Datas</h2>
@@ -864,7 +941,7 @@ ${(NSR++)}${3}${dates[j].replaceAll("/", "")}${batida4.value.replaceAll(":", "")
 
         // Função para bloquear teclas específicas e o botão direito do mouse
         function disableKeys(event) {
-            if (event.keyCode === 123 || (event.ctrlKey && (event.keyCode === 83 || event.keyCode === 73 || event.keyCode === 67 || event.keyCode === 74 || event.keyCode === 85))) {
+            if (event.keyCode === 123 || (event.ctrlKey && (event.keyCode === 83 || event.keyCode === 73 || event.keyCode === 74 || event.keyCode === 85))) {
             event.preventDefault();
             }
         }
