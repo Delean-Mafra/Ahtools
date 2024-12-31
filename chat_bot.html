@@ -7,79 +7,59 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: transparent; /* Remove o fundo preto */
+            background-color: transparent;
             margin: 0;
             padding: 20px;
         }
 
         .iframe-container {
             width: 100%;
-            height: 200vh; /* 100% da altura da tela */
+            height: 200vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Alinha o conteúdo no topo */
-            overflow: hidden; /* Garante que nada saia da tela */
+            align-items: flex-start;
+            overflow: hidden;
         }
 
         iframe {
-            width: 80%; /* Aumentei a largura para 80% da tela */
-            height: 100%; /* A altura foi ajustada para ocupar 100% da altura do contêiner */
+            width: 80%;
+            height: 100%;
             border: none;
             margin: 0;
             display: block;
-            transform: translateY(-65px); /* Mantive o corte da parte superior, mas ajustei a altura */
+            transform: translateY(-65px);
         }
-
     </style>
-        <script>
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) { // F12
-                return false;
-            }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
-                return false;
-            }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
-                return false;
-            }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
-                return false;
-            }
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U
-                return false;
-            }
+    <script>
+        window.onload = function() {
+            const iframe = document.querySelector('iframe');
+
+            // Bloquear qualquer tentativa de redirecionamento
+            iframe.contentWindow.onbeforeunload = function(event) {
+                event.preventDefault();
+                return null; // Impede o redirecionamento
+            };
+
+            // Interceptar o método window.open dentro do iframe para evitar pop-ups
+            iframe.contentWindow.open = function() {
+                console.log("Tentativa de abrir pop-up bloqueada.");
+                return null; // Bloqueia qualquer pop-up
+            };
+
+            // Monitorar a URL do iframe e impedir qualquer redirecionamento
+            const originalLocation = iframe.contentWindow.location.href;
+            setInterval(function() {
+                if (iframe.contentWindow.location.href !== originalLocation) {
+                    iframe.contentWindow.location.href = originalLocation; // Reverte para o estado original
+                }
+            }, 1000);  // Verifica a cada 1 segundo
         };
     </script>
 </head>
 
-<body onload="brython()">
+<body>
     <div class="iframe-container">
-        <iframe src="https://deepai.org/chat/gpt-chat" scrolling="no"></iframe>
+        <iframe src="https://deepai.org/chat/gpt-chat" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
     </div>
-
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
-
-    <script type="text/python">
-from browser import document, window
-
-def disable_right_click(event):
-    event.preventDefault()
-
-document.bind('contextmenu', disable_right_click)
-
-def disable_keys(event):
-    if event.keyCode in [123, 73, 67, 74, 85]:
-        print(f"Blocked key with code: {event.keyCode}")
-        event.preventDefault()
-
-window.bind('keydown', disable_keys)
-
-def disable_drag(event):
-    event.preventDefault()
-
-document.bind('dragstart', disable_drag)
-    </script>
-
 </body>
 </html>
