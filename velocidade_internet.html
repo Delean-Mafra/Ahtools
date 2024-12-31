@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste de Velocidade da Internet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #288f8f;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+    .button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Teste de Velocidade da Minha Internet</h1>
+  <p>Será que minha internet é rápida? Vamos fazer o teste!</p>
+  <button class="button" onclick="startSpeedTest()">Iniciar Teste</button>
+
+  <div id="result" class="result"></div>
+
+  <script>
+    function startSpeedTest() {
+      const downloadSize = 1000000; // Tamanho do arquivo de teste em bytes (1MB)
+      const uploadSize = 500000; // Tamanho para o upload simulado (500KB)
+
+      // Função para medir a velocidade de download
+      function testDownload() {
+        const startTime = Date.now();
+        // Usar o httpbin.org para obter dados de teste (JSON simples)
+        fetch('https://httpbin.org/stream/1') // Retorna 1MB de dados em formato de stream
+          .then(response => response.text())
+          .then(() => {
+            const endTime = Date.now();
+            const duration = (endTime - startTime) / 1000; // Tempo de download em segundos
+            const speed = (downloadSize * 8) / (duration * 1000000); // Velocidade em Mbps
+
+            const downloadSpeed = speed.toFixed(2); // Velocidade em Mbps
+            document.getElementById('result').innerHTML = `
+              <p><strong>Resultado do Teste de Velocidade:</strong></p>
+              <p>Velocidade de Download: ${downloadSpeed} Mbps</p>
+            `;
+            testUpload();
+          })
+          .catch(err => {
+            document.getElementById('result').innerHTML = "Erro ao medir a velocidade de download.";
+            console.error('Download error:', err);
+          });
+      }
+
+      // Função para medir a velocidade de upload
+      function testUpload() {
+        const startTime = Date.now();
+        const data = new Array(uploadSize).join('a'); // Dados simulados para upload
+
+        // Enviar dados simulados para o servidor (exemplo de endpoint de teste)
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://httpbin.org/post', true); // Endpoint de teste (httpbin)
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function () {
+          const endTime = Date.now();
+          const duration = (endTime - startTime) / 1000; // Tempo de upload em segundos
+          const speed = (uploadSize * 8) / (duration * 1000000); // Velocidade em Mbps
+
+          const uploadSpeed = speed.toFixed(2); // Velocidade de upload em Mbps
+          document.getElementById('result').innerHTML += `
+            <p>Velocidade de Upload: ${uploadSpeed} Mbps</p>
+          `;
+        };
+        xhr.onerror = function () {
+          document.getElementById('result').innerHTML += "Erro ao medir a velocidade de upload.";
+        };
+        xhr.send(data); // Enviar os dados simulados
+      }
+
+      // Iniciar o teste de download
+      testDownload();
+    }
+  </script>
+
+</body>
+</html>
