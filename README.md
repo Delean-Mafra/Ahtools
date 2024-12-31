@@ -7,8 +7,8 @@ Funcionalidades:
 1. Calculadora de Jornada
 A calculadora de jornada permite calcular a carga horária de trabalho, ajudando a calcular o total de horas trabalhadas, intervalos e horas extras de maneira simples e rápida. É essencial para o cálculo preciso de salários e controle de jornada de trabalho.
 
-2. Validador e Interpretador de Arquivo Fonte de Dados (Documento Fiscal MTE)
-Com esse validador, é possível verificar se os documentos fiscais exigidos pelo Ministério do Trabalho e Emprego (MTE) estão em conformidade com as exigências legais. Ele interpreta e valida os dados presentes no arquivo fonte de dados, ajudando no processo de auditoria de documentos fiscais.
+2. Validador e Interpretador de AFD(Arquivo Fonte de Dados - Documento Fiscal MTE)
+Com esse validador, é possível verificar se os documentos fiscais exigidos pelo Ministério do Trabalho e Emprego (MTE) estão em conformidade com as exigências legais. Ele interpreta e valida os dados presentes no AFD, ajudando no processo de auditoria de documentos fiscais.
 
 3. Validador Massivo de CPF por Planilha
 Permite a validação em massa de CPFs presentes em uma planilha. O usuário pode subir um arquivo com centenas ou até milhares de CPFs e o sistema irá verificar a validade de cada um, informando se algum está inválido. Uma ferramenta essencial para RH e DP, que permite garantir que os dados dos colaboradores estejam corretos.
