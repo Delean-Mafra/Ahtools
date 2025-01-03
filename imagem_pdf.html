@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversão de Imagens e PDFs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .tab {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .tab button {
+            padding: 10px;
+            background-color: #ddd;
+            border: none;
+            cursor: pointer;
+            width: 48%;
+        }
+        .tab button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Conversão de Arquivos</h2>
+    
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'imagemToPDF')">Imagem para PDF</button>
+        <button class="tablinks" onclick="openTab(event, 'pdfToImagem')">PDF para Imagem</button>
+    </div>
+
+    <div id="imagemToPDF" class="tab-content active">
+        <input type="file" id="imageInput" accept="image/*">
+        <br>
+        <button onclick="convertToPDF()">Converter para PDF</button>
+    </div>
+
+    <div id="pdfToImagem" class="tab-content">
+        <input type="file" id="pdfInput" accept="application/pdf">
+        <br>
+        <button onclick="convertPDFToImage()">Converter para Imagem</button>
+    </div>
+</div>
+
+<!-- Inclusão do jsPDF e pdf.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+
+<script>
+    // Função para abrir a aba de seleção
+    function openTab(evt, tabName) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].classList.remove("active");
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    // Função para converter imagem para PDF
+    function convertToPDF() {
+        const fileInput = document.getElementById('imageInput');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert("Por favor, selecione uma imagem.");
+            return;
+        }
+
+        const reader = new FileReader();
+        
+        reader.onload = function(event) {
+            const imgData = event.target.result;
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            
+            pdf.addImage(imgData, 'JPEG', 10, 10, 180, 160); 
+            pdf.save("imagem_convertida.pdf");
+        };
+        
+        reader.readAsDataURL(file);
+    }
+
+    // Função para converter PDF para imagem e fazer download
+    function convertPDFToImage() {
+        const fileInput = document.getElementById('pdfInput');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert("Por favor, selecione um arquivo PDF.");
+            return;
+        }
+
+        const reader = new FileReader();
+        
+        reader.onload = function(event) {
+            const pdfData = event.target.result;
+            const loadingTask = pdfjsLib.getDocument({data: pdfData});
+            
+            loadingTask.promise.then(function(pdf) {
+                pdf.getPage(1).then(function(page) {
+                    const scale = 1.5;
+                    const viewport = page.getViewport({ scale: scale });
+                    
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    
+                    page.render(renderContext).promise.then(function() {
+                        // Converter o canvas para uma imagem e fazer o download
+                        const imgData = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = imgData;
+                        link.download = 'pdf_convertido.png'; // Nome do arquivo de imagem
+                        link.click();
+                    });
+                });
+            });
+        };
+
+        reader.readAsArrayBuffer(file);
+    }
+</script>
+
+</body>
+</html>
